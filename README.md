@@ -8,9 +8,9 @@
 **Member Names:** 
 
 Alex Chan  (*101194371*)
-Mariami Lomtadze (*TBD*)
+Mariami Lomtadze (*101207989*)
 Natalie Jeong (*100794762*)
-Saki Futamura (*TBD*)
+Saki Futamura (*101202191*)
 
 **Responsibility Breakdown:** TBD
 
