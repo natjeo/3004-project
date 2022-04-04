@@ -18,7 +18,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 SOURCES += \
     DeviceControl.cpp \
     battery.cpp \
-    main.cpp
+    main.cpp \
+    user.cpp
 
 HEADERS += \
     Battery.h \
