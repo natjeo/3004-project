@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QStringList>
+#include "DataBase.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -35,6 +36,7 @@ private:
     QLabel powerLED;
     QLabel batteryLevelIndicator;
     QLabel sessionIndicator;
+    DataBase* db;
 
 };
 #endif // MAINWINDOW_H
