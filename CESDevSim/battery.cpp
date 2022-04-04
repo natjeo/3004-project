@@ -1,7 +1,7 @@
 #include "Battery.h"
 
-Battery::Battery(const QTimer& timer, const QString& intnst){
-    this->timer = timer;
+Battery::Battery(const QString& intnst){
+    this->timer = new QTimer();
     this->intensity = intnst;
 }
 

@@ -6,13 +6,13 @@
 
 class Battery {
     public:
-        Battery(const QTimer&, const QString&);
+        Battery(const QString&);
 
         void updateTimer();
         void navigateMenu();
 
     private:
-        QTimer timer;
+        QTimer* timer;
         QString intensity;
 };
 
