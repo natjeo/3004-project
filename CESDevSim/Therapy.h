@@ -6,10 +6,17 @@
 
 class Therapy {
     public:
-        Therapy(QTimer timer, QString intensity);
+        Therapy(QTimer* timer, QString intensity);
+
+        // getters
+        QString getIntensity();
+        QTimer* getTimer();
+
+        // setters
+        void setIntensity(QString intensity);
 
     private:
-        QTimer timer;
+        QTimer* timer;
         QString intensity;
 };
 
