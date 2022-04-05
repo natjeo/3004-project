@@ -6,7 +6,6 @@
         <file>buttons/homeButton.png</file>
         <file>buttons/okButton.png</file>
         <file>buttons/powerButton.png</file>
-        <file>buttons/saveBtn.png</file>
         <file>buttons/upButton.png</file>
         <file>icons/3hr Session.png</file>
         <file>icons/20min Session.png</file>
@@ -16,6 +15,39 @@
         <file>icons/Left.png</file>
         <file>icons/Right.png</file>
         <file>icons/User Session.png</file>
+        <file>buttons/home_press.png</file>
+        <file>buttons/ok_press.png</file>
+        <file>icons/power_off.png</file>
+        <file>icons/power_on.png</file>
+        <file>buttons/saveButton.png</file>
+        <file>buttons/del_press.png</file>
+        <file>buttons/dn_press.png</file>
+        <file>buttons/save_press.png</file>
+        <file>buttons/up_press.png</file>
+        <file>buttons/power_on.png</file>
         <file>overlay/Menu.png</file>
+        <file>icons/Delta.png</file>
+        <file>icons/MET.png</file>
+        <file>icons/Sub-Delta.png</file>
+        <file>icons/Theta.png</file>
+        <file>icons/100Hz.png</file>
+        <file>icons/Beta 1.png</file>
+        <file>icons/Beta 2.png</file>
+        <file>icons/Alpha.png</file>
+        <file>icons/1.png</file>
+        <file>icons/2.png</file>
+        <file>icons/3.png</file>
+        <file>icons/4.png</file>
+        <file>icons/5.png</file>
+        <file>icons/6.png</file>
+        <file>icons/7.png</file>
+        <file>icons/8.png</file>
+        <file>icons/3hr Session_on.png</file>
+        <file>icons/20min Session_on.png</file>
+        <file>icons/45min Session_on.png</file>
+        <file>icons/Sessions_on.png</file>
+        <file>icons/CES Output_on.png</file>
+        <file>icons/Left_on.png</file>
+        <file>icons/Right_on.png</file>
     </qresource>
 </RCC>
