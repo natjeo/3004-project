@@ -1,5 +1,5 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
+#include "DeviceControl.h"
+#include "ui_DeviceControl.h"
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)

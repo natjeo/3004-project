@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+#include "DeviceControl.h"
 
 #include <QApplication>
 
