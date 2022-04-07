@@ -1,18 +1,14 @@
 #include "User.h"
 
-User::User(int id, const QString& name){
+User::User(int id, QString name){
     this->id = id;
     this->name = name;
 }
 
 //getters
 
-QString User::getPreferences(){
+int User::getPreferences(){
     return this->preferences;
-}
-
-QList<QString> User::getHistoryList(){
-    return this->historyList;
 }
 
 QString User::getName(){
@@ -20,10 +16,10 @@ QString User::getName(){
 }
 
 // setters
-void User::setPreferences(const QString& preference){
+void User::setPreferences(int preference){
     this->preferences = preference;
 }
 
-void User::addToHistory(const QString& item){
-    this->historyList.push_back(item);
+void User::setBatteryLvl(int lvl){
+    this->batteryLvl = lvl;
 }
