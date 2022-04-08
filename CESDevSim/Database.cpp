@@ -61,9 +61,9 @@ User* DataBase::getUser(int id){
     QString name;
 
     if (query.first()) {
-        battery_lvl = query.value(0).toInt();
+        battery_lvl = query.value(2).toInt();
         name = query.value(1).toString();
-        pref_intensity = query.value(2).toInt();
+        pref_intensity = query.value(3).toInt();
 
     } else {
         throw "NO USER FOUND";
@@ -77,3 +77,92 @@ User* DataBase::getUser(int id){
 }
 
 
+bool DataBase::updatePreferences(int user_id, int pref_intensity){
+
+    // makes sure the operation is atomic
+    db.transaction();
+
+    QSqlQuery query;
+
+    query.prepare("UPDATE user SET pref_intensity=:pref_intensity WHERE user_id=:id;");
+    query.bindValue(":id", user_id);
+    query.bindValue(":pref_intensity", pref_intensity);
+
+    if (!query.exec()){
+        return false;
+    }
+
+    return true;
+}
+
+
+bool DataBase::updateBatteryLvl(int user_id, int battery_lvl){
+    // makes sure the operation is atomic
+    db.transaction();
+
+    QSqlQuery query;
+
+    query.prepare("UPDATE user SET battery_lvl=:battery_lvl WHERE user_id=:id;");
+    query.bindValue(":id", user_id);
+    query.bindValue(":battery_lvl", battery_lvl);
+
+    if (!query.exec()){
+        return false;
+    }
+
+    return true;
+}
+
+//bool DataBase::addTherapyRecord(Therapy* therapy){
+
+//    // makes sure the operation is atomic
+//    db.transaction();
+
+//    QSqlQuery query;
+
+//    int session = therapy->getSession();
+//    int duration = therapy->getDuration();
+//    int intensity = therapy->getIntensity();
+
+//    // example insert a row
+//    query.prepare("INSERT OR REPLACE INTO therapy(session_number, duration, intensity) VALUES (:session, :duration, :intensity);");
+//    query.bindValue(":session", session);
+//    query.bindValue(":duration", duration);
+//    query.bindValue(":intensity", intensity);
+
+//    if (!query.exec()){
+//        return false;
+//    }
+
+//    return true;
+//}
+
+//QList<Therapy*> DataBase::getTherapyRecords(int){
+//    // makes sure the operation is atomic
+//    db.transaction();
+
+//    QSqlQuery query;
+//    if (!query.exec("SELECT * FROM therapy")) {
+//        throw "COULDN'T EXEC THE QUERY";
+//    }
+
+//    while(query.next()) {
+
+//    }
+
+
+//    if (query.first()) {
+//        battery_lvl = query.value(2).toInt();
+//        name = query.value(1).toString();
+//        pref_intensity = query.value(3).toInt();
+
+//    } else {
+//        throw "NO USER FOUND";
+//    }
+
+//    User* user = new User(id, name);
+//    user->setPreferences(pref_intensity);
+//    user->setBatteryLvl(battery_lvl);
+
+//    return(user);
+//}

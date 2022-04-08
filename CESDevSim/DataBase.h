@@ -5,16 +5,20 @@
 #include <QSqlQuery>
 #include <QVariant>
 #include "User.h"
+#include "Therapy.h"
 
 class DataBase {
     public:
         DataBase();
 
-        void addTherapyRecord();
-        void addProfile(int id);
-
         bool initDB();
         User* getUser(int id);
+
+        bool updatePreferences(int, int);
+        bool updateBatteryLvl(int, int);
+       // bool addTherapyRecord(Therapy*);
+       // QList<Therapy*> getTherapyRecords(int);
+
 
     private:
         QSqlDatabase db;

@@ -11,6 +11,11 @@ int User::getPreferences(){
     return this->preferences;
 }
 
+int User::getBatteryLvl(){
+    return this->batteryLvl;
+}
+
+
 QString User::getName(){
     return this->name;
 }

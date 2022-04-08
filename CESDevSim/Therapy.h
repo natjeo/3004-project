@@ -6,11 +6,20 @@
 
 class Therapy {
     public:
-        Therapy(QTimer timer, QString intensity);
+        Therapy(int session_number, int duration, int intensity);
+        ~Therapy();
+
+
+        int getSession();
+        int getDuration();
+        int getIntensity();
 
     private:
-        QTimer timer;
-        QString intensity;
+       // QTimer timer;
+       // QString intensity;
+        int session_number;
+        int duration;
+        int intensity;
 };
 
 #endif // THERAPY_H

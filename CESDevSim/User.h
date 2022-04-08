@@ -10,6 +10,7 @@ class User {
         User(int id, QString name);
 
         int getPreferences();
+        int getBatteryLvl();
         QString getName();
 
         void setPreferences(int);

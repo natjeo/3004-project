@@ -21,6 +21,7 @@ SOURCES += \
     DeviceControl.cpp \
     battery.cpp \
     main.cpp \
+    therapy.cpp \
     user.cpp
 
 HEADERS += \
