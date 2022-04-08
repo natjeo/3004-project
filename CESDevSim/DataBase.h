@@ -1,14 +1,27 @@
 #ifndef DATABASE_H
 #define DATABASE_H
 
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QVariant>
+#include "User.h"
+#include "Therapy.h"
+
 class DataBase {
     public:
         DataBase();
 
-        void addTherapyRecord();
-        void addProfile();
+        bool initDB();
+        User* getUser(int id);
+
+        bool updatePreferences(int, int);
+        bool updateBatteryLvl(int, int);
+       // bool addTherapyRecord(Therapy*);
+       // QList<Therapy*> getTherapyRecords(int);
+
 
     private:
+        QSqlDatabase db;
 
 };
 

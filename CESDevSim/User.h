@@ -3,23 +3,24 @@
 
 #include <QString>
 #include <QList>
+#include <string>
 
 class User {
     public:
-        User(int id, const QString& name);
+        User(int id, QString name);
 
-        QString getPreferences();
-        QList<QString> getHistoryList();
+        int getPreferences();
+        int getBatteryLvl();
         QString getName();
 
-        void setPreferences(const QString&);
-        void addToHistory(const QString&);
+        void setPreferences(int);
+        void setBatteryLvl(int);
 
     private:
         int id;
         QString name;
-        QString preferences;
-        QList<QString> historyList;
+        int preferences;
+        int batteryLvl;
 };
 
 #endif // USER_H
