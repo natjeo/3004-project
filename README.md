@@ -5,14 +5,14 @@
 
 **Assigned TA:** Fazlay
 
-**Member Names:** 
+**Member Names & Responsibility Breakdown:** 
 
-Alex Chan  (*101194371*)
-Mariami Lomtadze (*101207989*)
-Natalie Jeong (*100794762*)
-Saki Futamura (*101202191*)
+Alex Chan  (*101194371*) - 
+Mariami Lomtadze (*101207989*) - 
+Natalie Jeong (*100794762*) - 
+Saki Futamura (*101202191*) - 
 
-**Responsibility Breakdown:** TBD
+**GitHub Repository Link:** https://github.com/natjeo/3004-project
 
 ## File Organization:
 
