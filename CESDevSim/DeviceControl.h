@@ -25,6 +25,7 @@ public:
     void electrodesPlaced(bool);
     void select();
     void recordTherapy();
+    void displayHistory();
 
 private:
     Ui::MainWindow *ui;
