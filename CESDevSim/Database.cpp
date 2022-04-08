@@ -20,9 +20,12 @@ bool DataBase::initDB(){
     db.transaction();
 
     QSqlQuery query;
+//    if (!query.exec("DROP TABLE therapy")) {
+//        throw "COULDN'T EXEC THE QUERY";
+//    }
 
     // example create a tables
-    if (!query.exec("CREATE TABLE IF NOT EXISTS therapy(therapy_id INTEGER NOT NULL UNIQUE PRIMARY KEY AUTOINCREMENT, session_number INTEGER NOT NULL, duration INTEGER NOT NULL, intensity INTEGER NOT NULL);")){
+    if (!query.exec("CREATE TABLE IF NOT EXISTS therapy(therapy_id INTEGER NOT NULL UNIQUE PRIMARY KEY AUTOINCREMENT, session_type TEXT NOT NULL, duration INTEGER NOT NULL, intensity INTEGER NOT NULL);")){
         return false;
     }
     if (!query.exec("CREATE TABLE IF NOT EXISTS user(user_id INTEGER NOT NULL UNIQUE PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL, battery_lvl INTEGER NOT NULL, pref_intensity INTEGER NOT NULL);")){
@@ -113,56 +116,46 @@ bool DataBase::updateBatteryLvl(int user_id, int battery_lvl){
     return true;
 }
 
-//bool DataBase::addTherapyRecord(Therapy* therapy){
+bool DataBase::addTherapyRecord(Therapy* therapy){
 
-//    // makes sure the operation is atomic
-//    db.transaction();
+    // makes sure the operation is atomic
+    db.transaction();
 
-//    QSqlQuery query;
+    QSqlQuery query;
 
-//    int session = therapy->getSession();
-//    int duration = therapy->getDuration();
-//    int intensity = therapy->getIntensity();
+    QString session = therapy->getSession();
+    int duration = therapy->getDuration();
+    int intensity = therapy->getIntensity();
 
-//    // example insert a row
-//    query.prepare("INSERT OR REPLACE INTO therapy(session_number, duration, intensity) VALUES (:session, :duration, :intensity);");
-//    query.bindValue(":session", session);
-//    query.bindValue(":duration", duration);
-//    query.bindValue(":intensity", intensity);
+    // example insert a row
+    query.prepare("INSERT OR REPLACE INTO therapy(session_type, duration, intensity) VALUES (:session, :duration, :intensity);");
+    query.bindValue(":session", session);
+    query.bindValue(":duration", duration);
+    query.bindValue(":intensity", intensity);
 
-//    if (!query.exec()){
-//        return false;
-//    }
+    if (!query.exec()){
+        return false;
+        throw "COULDN'T EXEC THE QUERY";
+    }
 
-//    return true;
-//}
+    return true;
+}
 
-//QList<Therapy*> DataBase::getTherapyRecords(int){
-//    // makes sure the operation is atomic
-//    db.transaction();
+QList<Therapy*> DataBase::getTherapyRecords(){
+    // makes sure the operation is atomic
+    db.transaction();
 
-//    QSqlQuery query;
-//    if (!query.exec("SELECT * FROM therapy")) {
-//        throw "COULDN'T EXEC THE QUERY";
-//    }
-
-//    while(query.next()) {
-
-//    }
+    QList<Therapy*> therapyList = {};
 
 
-//    if (query.first()) {
-//        battery_lvl = query.value(2).toInt();
-//        name = query.value(1).toString();
-//        pref_intensity = query.value(3).toInt();
+    QSqlQuery query;
+    if (!query.exec("SELECT * FROM therapy")) {
+        throw "COULDN'T EXEC THE QUERY";
+    }
 
-//    } else {
-//        throw "NO USER FOUND";
-//    }
+    while(query.next()) {
+        therapyList.append(new Therapy(query.value(1).toString(), query.value(2).toInt(), query.value(3).toInt()));
+    }
 
-//    User* user = new User(id, name);
-//    user->setPreferences(pref_intensity);
-//    user->setBatteryLvl(battery_lvl);
-
-//    return(user);
-//}
+    return(therapyList);
+}

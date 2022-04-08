@@ -1,13 +1,13 @@
 #include "Therapy.h"
 
-Therapy::Therapy(int session_number, int duration, int intensity){
-    this->session_number = session_number;
+Therapy::Therapy(QString session_type, int duration, int intensity){
+    this->session_type = session_type;
     this->duration = duration;
     this->intensity = intensity;
 }
 
-int Therapy::getSession(){
-    return(this->session_number);
+QString Therapy::getSession(){
+    return(this->session_type);
 }
 
 int Therapy::getDuration(){

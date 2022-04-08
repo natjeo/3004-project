@@ -9,11 +9,21 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     db = new DataBase();
     User* user = db->getUser(0);
-    qDebug() << (user->getBatteryLvl());
-    db->updateBatteryLvl(0, 50);
+    qDebug() << (user->getPreferences());
+    db->updatePreferences(0, 5);
     user = db->getUser(0);
 
-    qDebug() << (user->getBatteryLvl());
+    Therapy* therapy = new Therapy("MET", 45, 2);
+    if (db->addTherapyRecord(therapy)){
+        qInfo("therapy added succ");
+    }
+
+    qDebug() << (user->getPreferences());
+
+    QList<Therapy*> therapyHistory = db->getTherapyRecords();
+    qDebug() << therapyHistory.length();
+    qDebug() << therapyHistory.first()->getSession();
+
     //QString name = user->getName();
     //printf(name.toLatin1());
 }

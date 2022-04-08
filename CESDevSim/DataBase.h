@@ -16,8 +16,8 @@ class DataBase {
 
         bool updatePreferences(int, int);
         bool updateBatteryLvl(int, int);
-       // bool addTherapyRecord(Therapy*);
-       // QList<Therapy*> getTherapyRecords(int);
+        bool addTherapyRecord(Therapy*);
+        QList<Therapy*> getTherapyRecords();
 
 
     private:
