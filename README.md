@@ -18,9 +18,9 @@ Saki Futamura (*101202191*)
 
 The project directory is broken down as follows
 
-- **Project report** containing a compiled PDF `project-report.pdf` of all requirements
+- **README** current file outlining submission overview
 - **Design Documentation** containing jpg files of use cases/ diagram, sequence diagrams, UML and traceability matrix
-- **Source Files** containing Qt c++ code of our application
+- **CESDevSim** source files (.h and .c) and supporting materials required to run a working version of our Qt c++ application
 
 ## Running Instructions:
 
