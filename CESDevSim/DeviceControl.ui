@@ -940,6 +940,7 @@ QPushButton:pressed {
       <height>211</height>
      </rect>
     </property>
+	</widget>
    </widget>
   </widget>
  </widget>
