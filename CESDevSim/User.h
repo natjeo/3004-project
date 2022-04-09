@@ -12,6 +12,7 @@ class User {
         int getPreferences();
         int getBatteryLvl();
         QString getName();
+        int getId();
 
         void setPreferences(int);
         void setBatteryLvl(int);
