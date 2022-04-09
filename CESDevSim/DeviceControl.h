@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QStringList>
+#include <QElapsedTimer>
 #include "DataBase.h"
 
 
@@ -26,6 +27,11 @@ public:
     void select();
     void recordTherapy();
     void displayHistory();
+    void updatePreferences();
+    void displayMessage(QString);
+    void selectPressed(); // this is a temporary name we need a better one
+    void selectReleased(); // this is a temporary name we need a better one
+    void cleanMessage();
 
 private slots:
     void on_btn_power_clicked();
@@ -44,6 +50,8 @@ private:
     QLabel sessionIndicator;
     DataBase* db;
     Therapy* therapy;
+    User* user;
+    QElapsedTimer elapsedTimer;
 
 };
 #endif // MAINWINDOW_H
