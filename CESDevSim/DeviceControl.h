@@ -24,6 +24,8 @@ public:
     void navigateMenu();
     void electrodesPlaced(bool);
     void select();
+    void recordTherapy();
+    void displayHistory();
 
 private slots:
     void on_btn_power_clicked();
@@ -41,6 +43,7 @@ private:
     QLabel batteryLevelIndicator;
     QLabel sessionIndicator;
     DataBase* db;
+    Therapy* therapy;
 
 };
 #endif // MAINWINDOW_H
