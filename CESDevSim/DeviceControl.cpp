@@ -15,16 +15,12 @@ MainWindow::MainWindow(QWidget *parent)
     this->user = db->getUser(0);
 
     // test database stuff -  remove later
-        qDebug() << (user->getPreferences());
-        db->updatePreferences(0, 5);
         user = db->getUser(0);
 
-        Therapy* therapy = new Therapy("MET", 45, 2);
+        Therapy* therapy = new Therapy(1, "MET", 45, 2);
         if (db->addTherapyRecord(therapy)){
             qInfo("therapy added succ");
         }
-
-        qDebug() << (user->getPreferences());
 
         QList<Therapy*> therapyHistory = db->getTherapyRecords();
         qDebug() << therapyHistory.length();
@@ -95,8 +91,7 @@ void MainWindow::pressDn()
 }
 
 void MainWindow::savePreference(){
-    qDebug() << this->therapy->getIntensity();
-    db->updatePreferences(db->getUser(0)->getId(), this->therapy->getIntensity());
+    db->updatePreference(this->therapy->getSession(), this->therapy->getIntensity());
 }
 
 void MainWindow::on_btn_power_clicked()
@@ -105,9 +100,13 @@ void MainWindow::on_btn_power_clicked()
 }
 
 void MainWindow::updatePreferences(){
-    if (db->updatePreferences(this->user->getID(), this->therapy->getIntensity())) {
+    qDebug() << db->getPreference("MET");
+    this->therapy->setIntensity(100);
+    if (db->updatePreference(this->therapy->getSession(), this->therapy->getIntensity())) {
         qInfo("preferences updated succ");
         QString message = "Preferences updated";
+
+       qDebug() << db->getPreference("MET");
         displayMessage(message);
     }
 }
