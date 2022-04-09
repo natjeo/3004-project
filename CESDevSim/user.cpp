@@ -15,7 +15,7 @@ int User::getBatteryLvl(){
     return this->batteryLvl;
 }
 
-int User::getId(){
+int User::getID(){
     return this->id;
 }
 
