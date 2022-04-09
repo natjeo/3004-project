@@ -33,7 +33,6 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btn_home, &QPushButton::pressed, this, &MainWindow::displayHistory);
     connect(ui->btn_up, &QPushButton::pressed, this, &MainWindow::pressUp);
     connect(ui->btn_dn, &QPushButton::pressed, this, &MainWindow::pressDn);
-    connect(ui->btn_ok, &QPushButton::pressed, this, &MainWindow::savePreference);
     connect(ui->btn_ok, &QPushButton::pressed, this, &MainWindow::selectPressed);
     connect(ui->btn_ok, &QPushButton::released, this, &MainWindow::selectReleased);
 
@@ -90,10 +89,6 @@ void MainWindow::pressDn()
     qInfo("down");
 }
 
-void MainWindow::savePreference(){
-    db->updatePreference(this->therapy->getSession(), this->therapy->getIntensity());
-}
-
 void MainWindow::on_btn_power_clicked()
 {
 
@@ -101,7 +96,6 @@ void MainWindow::on_btn_power_clicked()
 
 void MainWindow::updatePreferences(){
     qDebug() << db->getPreference("MET");
-    this->therapy->setIntensity(100);
     if (db->updatePreference(this->therapy->getSession(), this->therapy->getIntensity())) {
         qInfo("preferences updated succ");
         QString message = "Preferences updated";
