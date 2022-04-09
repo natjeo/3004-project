@@ -9,18 +9,18 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     // setup database for user
     db = new DataBase();
-    this->therapy = new Therapy(1, "MET", 45, 3);
-    ui->historyList->setVisible(false);
+    this->therapy = new Therapy(1, "MET", 20, 3);
+    ui->recordsList->setVisible(false);
 
     this->user = db->getUser(0);
 
     // test database stuff -  remove later
-        user = db->getUser(0);
+       // user = db->getUser(0);
 
-        Therapy* therapy = new Therapy(1, "MET", 45, 2);
-        if (db->addTherapyRecord(therapy)){
-            qInfo("therapy added succ");
-        }
+//        Therapy* therapy = new Therapy(1, "MET", 45, 2);
+//        if (db->addTherapyRecord(therapy)){
+//            qInfo("therapy added succ");
+//        }
 
         QList<Therapy*> therapyHistory = db->getTherapyRecords();
         qDebug() << therapyHistory.length();
@@ -29,11 +29,11 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
         //QString name = user->getName();
         //printf(name.toLatin1());
 
-				//this->battery = new Battery(user->getBatteryLvl());
-				this->battery = new Battery;
-				this->batteryDisplayTimer = new QTimer(this);
-				connect(this->batteryDisplayTimer, &QTimer::timeout, this, &MainWindow::indicateBatteryLevel);
-				this->batteryDisplayTimer->start(5000);
+                //this->battery = new Battery(user->getBatteryLvl());
+                this->battery = new Battery;
+                this->batteryDisplayTimer = new QTimer(this);
+                connect(this->batteryDisplayTimer, &QTimer::timeout, this, &MainWindow::indicateBatteryLevel);
+                this->batteryDisplayTimer->start(5000);
 
     connect(ui->btn_save, &QPushButton::pressed, this, &MainWindow::recordTherapy);
     connect(ui->btn_home, &QPushButton::pressed, this, &MainWindow::displayHistory);
@@ -110,34 +110,50 @@ void MainWindow::selectSession(int btnId)
     switch (btnId){
         case 1:
             selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/MET_on.png);");
+            this->therapy->setSession("MET");
+            this->therapy->setIntensity(db->getPreference("MET"));
             break;
 
         case 2:
             selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Sub-Delta_on.png);");
+            this->therapy->setSession("Sub-Delta");
+            this->therapy->setIntensity(db->getPreference("Sub-Delta"));
             break;
 
         case 3:
             selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Delta_on.png);");
+            this->therapy->setSession("Delta");
+            this->therapy->setIntensity(db->getPreference("Delta"));
             break;
 
         case 4:
             selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Theta_on.png);");
+            this->therapy->setSession("Theta");
+            this->therapy->setIntensity(db->getPreference("Theta"));
             break;
 
         case 5:
             selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Alpha_on.png);");
+            this->therapy->setSession("Alpha");
+            this->therapy->setIntensity(db->getPreference("Alpha"));
             break;
 
         case 6:
             selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Beta 1_on.png);");
+            this->therapy->setSession("SMR");
+            this->therapy->setIntensity(db->getPreference("SMR"));
             break;
 
         case 7:
             selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Beta 2_on.png);");
+            this->therapy->setSession("Beta");
+            this->therapy->setIntensity(db->getPreference("Beta"));
             break;
 
         case 8:
             selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/100Hz_on.png);");
+            this->therapy->setSession("100Hz");
+            this->therapy->setIntensity(db->getPreference("100Hz"));
             break;
 
     }
@@ -153,14 +169,17 @@ void MainWindow::selectDuration(int btnId)
     switch (btnId){
         case 1:
             selDur->checkedButton()->setStyleSheet("border-image: url(:/icons/20min Session_on.png);");
+            this->therapy->setDuration(20);
             break;
 
         case 2:
             selDur->checkedButton()->setStyleSheet("border-image: url(:/icons/45min Session_on.png);");
+            this->therapy->setDuration(45);
             break;
 
         case 3:
             selDur->checkedButton()->setStyleSheet("border-image: url(:/icons/3hr Session_on.png);");
+            this->therapy->setDuration(180);
             break;
 
         case 4:
@@ -170,7 +189,7 @@ void MainWindow::selectDuration(int btnId)
 }
 
 void MainWindow::recordTherapy(){
-    ui->historyList->setVisible(false);
+    ui->recordsList->setVisible(false);
     qDebug() << this->therapy->getSession();
     if (db->addTherapyRecord(this->therapy)) {
         qInfo("therapy recorded succ");
@@ -181,16 +200,15 @@ void MainWindow::recordTherapy(){
 }
 
 void MainWindow::displayHistory(){
-    ui->table_menu->scene();
-    ui->historyList->clear();
+   // ui->table_menu->scene()->clear();
+    ui->recordsList->clear();
     QList<Therapy*> therapyList = db->getTherapyRecords();
-
     for (int i = 0; i < therapyList.length(); i++) {
         QString info = "#:" + QString::number(i+1)+ " Duration " + QString::number(therapyList.at(i)->getDuration()) + "; Session type: " + (therapyList.at(i)->getSession()) + "; Intensity: " + QString::number(therapyList.at(i)->getIntensity());
-        ui->historyList->addItem(info);
+        ui->recordsList->addItem(info);
     }
 
-    ui->historyList->setVisible(true);
+    ui->recordsList->setVisible(true);
 }
 
 void MainWindow::pressUp()
@@ -256,6 +274,7 @@ void MainWindow::updatePowerState()
     ui->bar_6->setVisible(powerState);
     ui->bar_7->setVisible(powerState);
     ui->bar_8->setVisible(powerState);
+    ui->recordsList->setVisible(powerState);
 
     if (powerState){
         ui->powerLED->setStyleSheet("image: url(:/icons/power_on.png);");
@@ -285,7 +304,7 @@ void MainWindow::updatePreferences(){
 
 void MainWindow::displayMessage(QString message){
         QTimer::singleShot(2000, this, &MainWindow::cleanMessage);
-        ui->historyList->setVisible(false);
+        ui->recordsList->setVisible(false);
         QGraphicsScene* scene = new QGraphicsScene;
         scene->addText(message);
         ui->table_menu->setScene(scene);
@@ -297,7 +316,7 @@ void MainWindow::selectPressed(){
 
 void MainWindow::cleanMessage(){
     ui->table_menu->scene()->clear();
-    ui->historyList->clear();
+    ui->recordsList->clear();
 }
 
 void MainWindow::selectReleased(){
@@ -325,7 +344,7 @@ void MainWindow::indicateBatteryLevel() {
 
 void MainWindow::displayBatteryLevel(int levels, bool flash) {
 	// Update battery graph UI with int from 0-8
-	qDebug() << "Battery graph: " << levels;
+    qDebug() << "Battery graph: " << levels;
 	if (flash)
 		qDebug() << "*FLASH*";
 }

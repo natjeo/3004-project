@@ -36,7 +36,7 @@ bool DataBase::initDB(){
        return false;
     }
 
-    if (!query.exec("INSERT OR REPLACE INTO session_preference VALUES('MET', 0)")) {
+    if (!query.exec("INSERT OR REPLACE INTO session_preference VALUES('MET', 0), ('Sub-Delta', 0), ('Delta', 0), ('Theta', 0), ('Alpha', 0), ('SMR', 0), ('Beta', 0), ('100Hz', 0)")) {
         return false;
     }
 
@@ -168,7 +168,8 @@ QList<Therapy*> DataBase::getTherapyRecords(){
 
     QSqlQuery query;
     if (!query.exec("SELECT * FROM therapy")) {
-        throw "COULDN'T EXEC THE QUERY";
+        qInfo("what");
+        //throw "COULDN'T EXEC THE QUERY";
     }
 
     while(query.next()) {

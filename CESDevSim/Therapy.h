@@ -15,6 +15,8 @@ class Therapy {
         int getIntensity();
 
         void setIntensity(int intensity);
+        void setSession(QString session_type);
+        void setDuration(int duration);
 
     private:
        // QTimer timer;
