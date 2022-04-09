@@ -44,6 +44,8 @@ public:
     void powerBtnPressed();
     void selectDuration(int);
     void selectSession(int);
+    void updateSessionTimer();
+    void stopSession();
 
 public slots:
     void displayHistory();
@@ -60,6 +62,7 @@ private:
     QButtonGroup* selDur;
     QButtonGroup* selSes;
     bool powerState;
-
+    QTimer *sessionTimer;
+    int sessionTime;
 };
 #endif // MAINWINDOW_H

@@ -1,15 +1,11 @@
 #include "Therapy.h"
 
-Therapy::Therapy(int id, QString session_type, int duration, int intensity){
-    this->id = id;
+Therapy::Therapy(QString session_type, int duration, int intensity){
     this->session_type = session_type;
     this->duration = duration;
     this->intensity = intensity;
 }
 
-int Therapy::getId(){
-    return(this->id);
-}
 QString Therapy::getSession(){
     return(this->session_type);
 }
@@ -34,4 +30,8 @@ void Therapy::setSession(QString session_type){
 void Therapy::setDuration(int duration){
     this->duration = duration;
 
+}
+
+bool Therapy::readyToStart(){
+    return ((session_type != "NAN") && (duration != -1) && (intensity != 0));
 }

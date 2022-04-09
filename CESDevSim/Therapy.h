@@ -6,10 +6,9 @@
 
 class Therapy {
     public:
-        Therapy(int id, QString session_type, int duration, int intensity);
+        Therapy( QString session_type = "NAN", int duration = -1, int intensity = 0);
         ~Therapy();
 
-        int getId();
         QString getSession();
         int getDuration();
         int getIntensity();
@@ -18,10 +17,10 @@ class Therapy {
         void setSession(QString session_type);
         void setDuration(int duration);
 
+        bool readyToStart();
     private:
        // QTimer timer;
        // QString intensity;
-        int id;
         QString session_type;
         int duration;
         int intensity;
