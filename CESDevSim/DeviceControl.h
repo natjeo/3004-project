@@ -25,6 +25,9 @@ public:
     void electrodesPlaced(bool);
     void select();
 
+private slots:
+    void on_btn_power_clicked();
+
 private:
     Ui::MainWindow *ui;
 

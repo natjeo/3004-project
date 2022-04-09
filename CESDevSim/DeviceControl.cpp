@@ -28,8 +28,15 @@ MainWindow::MainWindow(QWidget *parent)
     //printf(name.toLatin1());
 }
 
+
+
 MainWindow::~MainWindow()
 {
     delete ui;
 }
 
+
+void MainWindow::on_btn_power_clicked()
+{
+
+}
