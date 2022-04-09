@@ -931,6 +931,15 @@ QPushButton:pressed {
     <property name="text">
      <string/>
     </property>
+   <widget class="QListWidget" name="historyList">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>170</y>
+      <width>261</width>
+      <height>211</height>
+     </rect>
+    </property>
    </widget>
   </widget>
  </widget>

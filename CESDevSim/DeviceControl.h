@@ -5,6 +5,7 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QStringList>
+#include <QElapsedTimer>
 #include <QButtonGroup>
 
 #include "DataBase.h"
@@ -25,7 +26,16 @@ public:
     void updateTimer();
     void navigateMenu();
     void electrodesPlaced(bool);
-//    void select();
+    void pressUp();
+    void pressDn();
+    void savePreference();
+    void recordTherapy();
+    void displayHistory();
+    void updatePreferences();
+    void displayMessage(QString);
+    void selectPressed(); // this is a temporary name we need a better one
+    void selectReleased(); // this is a temporary name we need a better one
+    void cleanMessage();
 
     void updatePowerState();
     void powerBtnPressed();
@@ -44,8 +54,10 @@ private:
 //    QLabel batteryLevelIndicator;
 //    QLabel sessionIndicator;
     DataBase* db;
+    Therapy* therapy;
+    User* user;
+    QElapsedTimer elapsedTimer;
     QButtonGroup* sesDur;
-
     bool powerState;
 
 };

@@ -14,10 +14,12 @@ class DataBase {
         bool initDB();
         User* getUser(int id);
 
-        bool updatePreferences(int, int);
+        bool updatePreference(QString, int);
+        int getPreference(QString);
         bool updateBatteryLvl(int, int);
         bool addTherapyRecord(Therapy*);
         QList<Therapy*> getTherapyRecords();
+        bool updatePreferences(Therapy* therapy);
 
 
     private:

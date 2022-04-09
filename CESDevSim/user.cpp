@@ -15,6 +15,9 @@ int User::getBatteryLvl(){
     return this->batteryLvl;
 }
 
+int User::getID(){
+    return this->id;
+}
 
 QString User::getName(){
     return this->name;
