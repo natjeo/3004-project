@@ -7,6 +7,8 @@
 #include <QStringList>
 #include <QElapsedTimer>
 #include <QTimer>
+#include <QButtonGroup>
+
 #include "DataBase.h"
 #include "Battery.h"
 
@@ -38,27 +40,30 @@ public:
 		void indicateBatteryLevel();
 		void displayBatteryLevel(int, bool = false);
 
-private slots:
-    void on_btn_power_clicked();
+    void updatePowerState();
+    void powerBtnPressed();
+    void selectDuration();
 
 private:
     Ui::MainWindow *ui;
 
-    QPushButton powerOn;
-    QPushButton selectUp;
-    QPushButton slectDn;
-    QPushButton record;
-    QPushButton startSession;
-    QStringList historyMenu;
-    QLabel powerLED;
-    QLabel batteryLevelIndicator;
-    QLabel sessionIndicator;
+//    QPushButton powerOn;
+//    QPushButton selectUp;
+//    QPushButton slectDn;
+//    QPushButton record;
+//    QPushButton startSession;
+//    QStringList historyMenu;
+//    QLabel powerLED;
+//    QLabel batteryLevelIndicator;
+//    QLabel sessionIndicator;
     DataBase* db;
     Therapy* therapy;
     User* user;
     Battery* battery;
 		QTimer *batteryDisplayTimer;
     QElapsedTimer elapsedTimer;
+    QButtonGroup* sesDur;
+    bool powerState;
 
 };
 #endif // MAINWINDOW_H
