@@ -3,17 +3,30 @@
 
 #include <QString>
 #include <QTimer>
+#include <QDebug>
+#include <QtMath>
 
-class Battery {
-    public:
-        Battery(const QString&);
+#define NORMAL 0
+#define LOW 1
+#define CRITICALLY_LOW 2
 
-        void updateTimer();
-        void navigateMenu();
+#define LOW_LEVEL 25
+#define CRITICALLY_LOW_LEVEL 12
 
-    private:
-        QTimer* timer;
-        QString intensity;
+class Battery: public QObject {
+	public:
+		Battery(int = 100);
+
+		int curStatus();
+		int getLevel();
+		int getLevelForDisplayGraph();
+		void drainBattery(int);
+		QTimer* getTimer();
+
+	private:
+		void updateBattery();
+		QTimer* timer;
+		int level;
 };
 
 #endif // BATTERY_H

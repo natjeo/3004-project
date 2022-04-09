@@ -6,8 +6,9 @@
 #include <QLabel>
 #include <QStringList>
 #include <QElapsedTimer>
+#include <QTimer>
 #include "DataBase.h"
-
+#include "Battery.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -34,6 +35,8 @@ public:
     void selectPressed(); // this is a temporary name we need a better one
     void selectReleased(); // this is a temporary name we need a better one
     void cleanMessage();
+		void indicateBatteryLevel();
+		void displayBatteryLevel(int, bool = false);
 
 private slots:
     void on_btn_power_clicked();
@@ -53,6 +56,8 @@ private:
     DataBase* db;
     Therapy* therapy;
     User* user;
+    Battery* battery;
+		QTimer *batteryDisplayTimer;
     QElapsedTimer elapsedTimer;
 
 };
