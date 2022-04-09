@@ -12,7 +12,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->therapy = new Therapy("MET", 45, 3);
     ui->historyList->setVisible(false);
 
-    User* user = db->getUser(0);
+    this->user = db->getUser(0);
 
     // test database stuff -  remove later
         qDebug() << (user->getPreferences());
@@ -35,6 +35,8 @@ MainWindow::MainWindow(QWidget *parent)
 
     connect(ui->btn_save, &QPushButton::pressed, this, &MainWindow::recordTherapy);
     connect(ui->btn_home, &QPushButton::pressed, this, &MainWindow::displayHistory);
+    connect(ui->btn_ok, &QPushButton::pressed, this, &MainWindow::selectPressed);
+    connect(ui->btn_ok, &QPushButton::released, this, &MainWindow::selectReleased);
 
 }
 
@@ -74,3 +76,35 @@ void MainWindow::on_btn_power_clicked()
 
 }
 
+void MainWindow::updatePreferences(){
+    if (db->updatePreferences(this->user->getID(), this->therapy->getIntensity())) {
+        qInfo("preferences updated succ");
+        QString message = "Preferences updated";
+        displayMessage(message);
+    }
+}
+
+
+void MainWindow::displayMessage(QString message){
+        QTimer::singleShot(2000, this, &MainWindow::cleanMessage);
+        ui->historyList->setVisible(false);
+        QGraphicsScene* scene = new QGraphicsScene;
+        scene->addText(message);
+        ui->table_menu->setScene(scene);
+}
+
+void MainWindow::selectPressed(){
+    elapsedTimer.start();
+}
+
+void MainWindow::cleanMessage(){
+    ui->table_menu->scene()->clear();
+    ui->historyList->clear();
+}
+
+void MainWindow::selectReleased(){
+    int timeMilliSecs = elapsedTimer.elapsed();
+    if (timeMilliSecs >= 1000) {
+        updatePreferences();
+    }
+}
