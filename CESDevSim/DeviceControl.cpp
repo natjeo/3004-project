@@ -9,18 +9,10 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     // setup database for user
     db = new DataBase();
-    this->therapy = new Therapy(1, "MET", 20, 3);
     ui->recordsList->setVisible(false);
+    this->sessionTime = 0;
 
     this->user = db->getUser(0);
-
-    // test database stuff -  remove later
-       // user = db->getUser(0);
-
-//        Therapy* therapy = new Therapy(1, "MET", 45, 2);
-//        if (db->addTherapyRecord(therapy)){
-//            qInfo("therapy added succ");
-//        }
 
         QList<Therapy*> therapyHistory = db->getTherapyRecords();
         qDebug() << therapyHistory.length();
@@ -36,11 +28,13 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
                 this->batteryDisplayTimer->start(5000);
 
     connect(ui->btn_save, &QPushButton::pressed, this, &MainWindow::recordTherapy);
-    connect(ui->btn_home, &QPushButton::pressed, this, &MainWindow::displayHistory);
+    connect(ui->btn_home, &QPushButton::pressed, this, &MainWindow::displayHomeScreen);
     connect(ui->btn_up, &QPushButton::pressed, this, &MainWindow::pressUp);
     connect(ui->btn_dn, &QPushButton::pressed, this, &MainWindow::pressDn);
     connect(ui->btn_ok, &QPushButton::pressed, this, &MainWindow::selectPressed);
     connect(ui->btn_ok, &QPushButton::released, this, &MainWindow::selectReleased);
+    connect(ui->btn_history, &QPushButton::pressed, this, &MainWindow::displayHistory);
+    connect(ui->btn_del, &QPushButton::pressed, this, &MainWindow::stopSession);
 
     //QString name = user->getName();
     //printf(name.toLatin1());
@@ -191,16 +185,18 @@ void MainWindow::selectDuration(int btnId)
 void MainWindow::recordTherapy(){
     ui->recordsList->setVisible(false);
     qDebug() << this->therapy->getSession();
-    if (db->addTherapyRecord(this->therapy)) {
-        qInfo("therapy recorded succ");
-        QGraphicsScene* scene = new QGraphicsScene;
-        scene->addText("therapy saved succ");
-        ui->table_menu->setScene(scene);
+    if (this->therapy->readyToStart()) {
+        if (db->addTherapyRecord(this->therapy)) {
+            qInfo("therapy recorded succ");
+            displayMessage("therapy saved *SOMEBODY SPELL SUCCESSFULLY CORRECTLY FOR ME*"); //update this!!!!!!!!!!!!!!
+        }
+    } else {
+        displayMessage("Plase select everything before starting therapy");
     }
 }
 
 void MainWindow::displayHistory(){
-   // ui->table_menu->scene()->clear();
+    ui->btn_history->setVisible(false);
     ui->recordsList->clear();
     QList<Therapy*> therapyList = db->getTherapyRecords();
     for (int i = 0; i < therapyList.length(); i++) {
@@ -275,11 +271,18 @@ void MainWindow::updatePowerState()
     ui->bar_7->setVisible(powerState);
     ui->bar_8->setVisible(powerState);
     ui->recordsList->setVisible(powerState);
+    ui->btn_history->setVisible(powerState);
 
     if (powerState){
         ui->powerLED->setStyleSheet("image: url(:/icons/power_on.png);");
+        this->therapy = new Therapy("MET", 20, db->getPreference("MET"));
+        displayHomeScreen();
     } else {
         ui->powerLED->setStyleSheet("image: url(:/icons/power_off.png);");
+        if (this->sessionTime > 0) {
+            this->sessionTimer->stop();
+            this->sessionTime = 0;
+        }
     }
 }
 
@@ -312,11 +315,22 @@ void MainWindow::displayMessage(QString message){
 
 void MainWindow::selectPressed(){
     elapsedTimer.start();
+    if (this->therapy->readyToStart()) {
+        ui->btn_history->setVisible(false);
+        ui->table_menu->scene()->clear();
+       this->sessionTime = this->therapy->getDuration() * 60;
+        this->sessionTimer = new QTimer(this);
+        connect(this->sessionTimer, &QTimer::timeout, this, &MainWindow::updateSessionTimer);
+        this->sessionTimer->start(1000);
+    } else {
+        displayMessage("Plase select everything before starting therapy");
+    }
 }
 
 void MainWindow::cleanMessage(){
     ui->table_menu->scene()->clear();
     ui->recordsList->clear();
+    displayHomeScreen();
 }
 
 void MainWindow::selectReleased(){
@@ -347,4 +361,45 @@ void MainWindow::displayBatteryLevel(int levels, bool flash) {
     qDebug() << "Battery graph: " << levels;
 	if (flash)
 		qDebug() << "*FLASH*";
+}
+
+void MainWindow::displayHomeScreen(){
+    if (this->sessionTime == 0) {
+        ui->btn_history->setVisible(true);
+        ui->recordsList->setVisible(false);
+        QGraphicsScene* scene = new QGraphicsScene;
+        scene->addText("WELCOME, EVERYTHING IS FINE!");
+    //   QGraphicsTextItem *history = scene->addText("see history");
+    //    history->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+    //    history->setPos(100, 100);
+    //    connect(history, SIGNAL(linkActivated(QString("see history"))), this, SLOT(displayHistory()));
+        ui->table_menu->setScene(scene);
+    }
+}
+
+void MainWindow::updateSessionTimer(){
+    if (sessionTimer > 0) {
+        ui->table_menu->scene()->clear();
+        QGraphicsTextItem *text = ui->table_menu->scene()->addText("Time before the end of the session:");
+        text->setPos(20, 20);
+        int hrs = this->sessionTime / 3600;
+        int mins = this->sessionTime / 60;
+        int secs = this->sessionTime % 60;
+        this->sessionTime -= 1;
+        QString hrsStr = (hrs == 0) ? "00": QString::number(hrs);
+        QString minStr = (mins == 0) ? "00": QString::number(mins);
+        QString secStr = (secs == 0) ? "00": QString::number(secs);
+        QGraphicsTextItem *timerText = ui->table_menu->scene()->addText(hrsStr + ":" + minStr + ":" + secStr);
+        timerText->setPos(85, 50);
+    } else {
+        this->sessionTimer->stop();
+    }
+}
+
+void MainWindow::stopSession(){
+    if (this->sessionTime > 0) {
+        this->sessionTimer->stop();
+        this->sessionTime = 0;
+    }
+    displayHomeScreen();
 }

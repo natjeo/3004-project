@@ -98,25 +98,6 @@ User* DataBase::getUser(int id){
     return(user);
 }
 
-bool DataBase::updatePreferences(Therapy* therapy){
-    // makes sure the operation is atomic
-    db.transaction();
-
-    QSqlQuery query;
-
-    query.prepare("UPDATE therapy SET pref_intensity=:pref_intensity WHERE therapy_id=:id;");
-    query.bindValue(":id", therapy->getId());
-    query.bindValue(":pref_intensity", therapy->getIntensity());
-
-    if (!query.exec()){
-        return false;
-    }
-
-    return true;
-}
-
-
-
 bool DataBase::updateBatteryLvl(int user_id, int battery_lvl){
     // makes sure the operation is atomic
     db.transaction();
@@ -173,7 +154,7 @@ QList<Therapy*> DataBase::getTherapyRecords(){
     }
 
     while(query.next()) {
-        therapyList.append(new Therapy(query.value(0).toInt(), query.value(1).toString(), query.value(2).toInt(), query.value(3).toInt()));
+        therapyList.append(new Therapy(query.value(1).toString(), query.value(2).toInt(), query.value(3).toInt()));
     }
 
     return(therapyList);

@@ -1088,6 +1088,19 @@ QPushButton:pressed {
      </rect>
     </property>
    </widget>
+   <widget class="QPushButton" name="btn_history">
+    <property name="geometry">
+     <rect>
+      <x>470</x>
+      <y>180</y>
+      <width>80</width>
+      <height>25</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>see history</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

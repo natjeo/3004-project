@@ -31,7 +31,6 @@ public:
     void pressDn();
     void savePreference();
     void recordTherapy();
-    void displayHistory();
     void updatePreferences();
     void displayMessage(QString);
     void selectPressed(); // this is a temporary name we need a better one
@@ -39,11 +38,17 @@ public:
     void cleanMessage();
     void indicateBatteryLevel();
     void displayBatteryLevel(int, bool = false);
+    void displayHomeScreen();
 
     void updatePowerState();
     void powerBtnPressed();
     void selectDuration(int);
     void selectSession(int);
+    void updateSessionTimer();
+    void stopSession();
+
+public slots:
+    void displayHistory();
 
 private:
     Ui::MainWindow *ui;
@@ -57,6 +62,7 @@ private:
     QButtonGroup* selDur;
     QButtonGroup* selSes;
     bool powerState;
-
+    QTimer *sessionTimer;
+    int sessionTime;
 };
 #endif // MAINWINDOW_H
