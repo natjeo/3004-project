@@ -35,6 +35,18 @@ public:
     void selectReleased(); // this is a temporary name we need a better one
     void cleanMessage();
 
+    void selectMET();
+    void selectSubDelta();
+    void selectDelta();
+    void selectTheta();
+    void selectAlpha();
+    void selectSMR();
+    void selectBeta();
+    void select100Hz();
+    void select20min();
+    void select45min();
+    void select3h();
+
 private slots:
     void on_btn_power_clicked();
 

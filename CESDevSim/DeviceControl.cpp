@@ -36,6 +36,19 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->btn_ok, &QPushButton::pressed, this, &MainWindow::selectPressed);
     connect(ui->btn_ok, &QPushButton::released, this, &MainWindow::selectReleased);
 
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::selectMET);
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::selectSubDelta);
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::selectDelta);
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::selectTheta);
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::selectAlpha);
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::selectSMR);
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::selectBeta);
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::select100Hz);
+
+
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::select20min);
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::select45min);
+//    connect(ui->btn, &QPushButton::pressed, this, &MainWindow::select3h);
 }
 
 
@@ -129,3 +142,48 @@ void MainWindow::selectReleased(){
         updatePreferences();
     }
 }
+
+void MainWindow::selectMET(){
+    this->therapy->setSession("MET");
+}
+
+void MainWindow::selectSubDelta(){
+    this->therapy->setSession("Sub-Delta");
+}
+
+void MainWindow::selectDelta(){
+    this->therapy->setSession("Delta");
+}
+
+void MainWindow::selectTheta(){
+    this->therapy->setSession("Theta");
+}
+
+void MainWindow::selectAlpha(){
+    this->therapy->setSession("Alpha");
+}
+
+void MainWindow::selectSMR(){
+    this->therapy->setSession("SMR");
+}
+
+void MainWindow::selectBeta(){
+    this->therapy->setSession("Beta");
+}
+
+void MainWindow::select100Hz(){
+    this->therapy->setSession("100Hz");
+}
+
+void MainWindow::select20min(){
+    this->therapy->setDuration(20);
+}
+
+void MainWindow::select45min(){
+    this->therapy->setDuration(45);
+}
+
+void MainWindow::select3h(){
+    this->therapy->setDuration(180);
+}
+

@@ -26,3 +26,11 @@ int Therapy::getIntensity(){
 void Therapy::setIntensity(int intensity){
     this->intensity = intensity;
 }
+
+void Therapy::setSession(QString session_type){
+    this->session_type = session_type;
+}
+
+void Therapy::setDuration(int duration){
+    this->duration = duration;
+}
