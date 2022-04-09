@@ -32,6 +32,25 @@ bool DataBase::initDB(){
        return false;
     }
 
+    if (!query.exec("CREATE TABLE IF NOT EXISTS session_preference(session_type TEXT NOT NULL UNIQUE PRIMARY KEY, pref_intensity INTEGER NOT NULL);")){
+       return false;
+    }
+
+    if (!query.exec("INSERT OR REPLACE INTO session_preference VALUES('MET', 0)")) {
+        return false;
+    }
+
+    // example insert a row
+    query.prepare("INSERT OR REPLACE INTO user(user_id, name, battery_lvl, pref_intensity) VALUES (:id, :name, :battery_lvl, :pref_intensity);");
+    query.bindValue(":id", 0);
+    query.bindValue(":name", "Jane");
+    query.bindValue(":battery_lvl", 100);
+    query.bindValue(":pref_intensity", 1);
+
+    if (!query.exec()){
+        return false;
+    }
+
     // example insert a row
     query.prepare("INSERT OR REPLACE INTO user(user_id, name, battery_lvl, pref_intensity) VALUES (:id, :name, :battery_lvl, :pref_intensity);");
     query.bindValue(":id", 0);
@@ -77,25 +96,6 @@ User* DataBase::getUser(int id){
     user->setBatteryLvl(battery_lvl);
 
     return(user);
-}
-
-
-bool DataBase::updatePreferences(int user_id, int pref_intensity){
-
-    // makes sure the operation is atomic
-    db.transaction();
-
-    QSqlQuery query;
-
-    query.prepare("UPDATE user SET pref_intensity=:pref_intensity WHERE user_id=:id;");
-    query.bindValue(":id", user_id);
-    query.bindValue(":pref_intensity", pref_intensity);
-
-    if (!query.exec()){
-        return false;
-    }
-
-    return true;
 }
 
 bool DataBase::updatePreferences(Therapy* therapy){
@@ -172,8 +172,51 @@ QList<Therapy*> DataBase::getTherapyRecords(){
     }
 
     while(query.next()) {
-        therapyList.append(new Therapy(query.value(1).toString(), query.value(2).toInt(), query.value(3).toInt()));
+        therapyList.append(new Therapy(query.value(0).toInt(), query.value(1).toString(), query.value(2).toInt(), query.value(3).toInt()));
     }
 
     return(therapyList);
+}
+
+
+bool DataBase::updatePreference(QString session_type, int pref_intensity){
+    // makes sure the operation is atomic
+    db.transaction();
+
+    QSqlQuery query;
+
+    query.prepare("UPDATE session_preference SET pref_intensity=:pref_intensity WHERE session_type=:session_type;");
+    query.bindValue(":session_type", session_type);
+    query.bindValue(":pref_intensity", pref_intensity);
+
+    if (!query.exec()){
+        return false;
+    }
+
+    return true;
+}
+
+int DataBase::getPreference(QString session_type){
+    // makes sure the operation is atomic
+    db.transaction();
+
+    QSqlQuery query;
+    query.prepare("SELECT * FROM session_preference WHERE session_type=:session_type");
+    query.bindValue(":session_type", session_type);
+    query.exec();
+
+    if (!db.commit()) {
+        throw "COULDN'T EXECUTE THE QUERY";
+    }
+
+    int pref_intensity = 0;
+
+    if (query.first()) {
+        pref_intensity = query.value(1).toInt();
+
+    } else {
+        throw "NO USER FOUND";
+    }
+
+    return pref_intensity;
 }
