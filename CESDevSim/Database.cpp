@@ -98,6 +98,24 @@ bool DataBase::updatePreferences(int user_id, int pref_intensity){
     return true;
 }
 
+bool DataBase::updatePreferences(Therapy* therapy){
+    // makes sure the operation is atomic
+    db.transaction();
+
+    QSqlQuery query;
+
+    query.prepare("UPDATE therapy SET pref_intensity=:pref_intensity WHERE therapy_id=:id;");
+    query.bindValue(":id", therapy->getId());
+    query.bindValue(":pref_intensity", therapy->getIntensity());
+
+    if (!query.exec()){
+        return false;
+    }
+
+    return true;
+}
+
+
 
 bool DataBase::updateBatteryLvl(int user_id, int battery_lvl){
     // makes sure the operation is atomic

@@ -24,7 +24,9 @@ public:
     void updateTimer();
     void navigateMenu();
     void electrodesPlaced(bool);
-    void select();
+    void pressUp();
+    void pressDn();
+    void savePreference();
     void recordTherapy();
     void displayHistory();
     void updatePreferences();
