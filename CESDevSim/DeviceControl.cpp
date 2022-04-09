@@ -14,14 +14,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     this->user = db->getUser(0);
 
-    // test database stuff -  remove later
-       // user = db->getUser(0);
-
-//        Therapy* therapy = new Therapy(1, "MET", 45, 2);
-//        if (db->addTherapyRecord(therapy)){
-//            qInfo("therapy added succ");
-//        }
-
         QList<Therapy*> therapyHistory = db->getTherapyRecords();
         qDebug() << therapyHistory.length();
         //qDebug() << therapyHistory.first()->getSession();
@@ -36,11 +28,12 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
                 this->batteryDisplayTimer->start(5000);
 
     connect(ui->btn_save, &QPushButton::pressed, this, &MainWindow::recordTherapy);
-    connect(ui->btn_home, &QPushButton::pressed, this, &MainWindow::displayHistory);
+    connect(ui->btn_home, &QPushButton::pressed, this, &MainWindow::displayHomeScreen);
     connect(ui->btn_up, &QPushButton::pressed, this, &MainWindow::pressUp);
     connect(ui->btn_dn, &QPushButton::pressed, this, &MainWindow::pressDn);
     connect(ui->btn_ok, &QPushButton::pressed, this, &MainWindow::selectPressed);
     connect(ui->btn_ok, &QPushButton::released, this, &MainWindow::selectReleased);
+    connect(ui->btn_history, &QPushButton::pressed, this, &MainWindow::displayHistory);
 
     //QString name = user->getName();
     //printf(name.toLatin1());
@@ -200,7 +193,7 @@ void MainWindow::recordTherapy(){
 }
 
 void MainWindow::displayHistory(){
-   // ui->table_menu->scene()->clear();
+    ui->btn_history->setVisible(false);
     ui->recordsList->clear();
     QList<Therapy*> therapyList = db->getTherapyRecords();
     for (int i = 0; i < therapyList.length(); i++) {
@@ -275,9 +268,11 @@ void MainWindow::updatePowerState()
     ui->bar_7->setVisible(powerState);
     ui->bar_8->setVisible(powerState);
     ui->recordsList->setVisible(powerState);
+    ui->btn_history->setVisible(powerState);
 
     if (powerState){
         ui->powerLED->setStyleSheet("image: url(:/icons/power_on.png);");
+        displayHomeScreen();
     } else {
         ui->powerLED->setStyleSheet("image: url(:/icons/power_off.png);");
     }
@@ -347,4 +342,16 @@ void MainWindow::displayBatteryLevel(int levels, bool flash) {
     qDebug() << "Battery graph: " << levels;
 	if (flash)
 		qDebug() << "*FLASH*";
+}
+
+void MainWindow::displayHomeScreen(){
+    ui->btn_history->setVisible(true);
+    ui->recordsList->setVisible(false);
+    QGraphicsScene* scene = new QGraphicsScene;
+    scene->addText("WELCOME, EVERYTHING IS FINE!");
+//   QGraphicsTextItem *history = scene->addText("see history");
+//    history->setFlags(QGraphicsItem::ItemIsSelectable | QGraphicsItem::ItemIsFocusable);
+//    history->setPos(100, 100);
+//    connect(history, SIGNAL(linkActivated(QString("see history"))), this, SLOT(displayHistory()));
+    ui->table_menu->setScene(scene);
 }
