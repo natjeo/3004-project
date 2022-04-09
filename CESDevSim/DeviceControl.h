@@ -6,6 +6,8 @@
 #include <QLabel>
 #include <QStringList>
 #include <QElapsedTimer>
+#include <QButtonGroup>
+
 #include "DataBase.h"
 
 
@@ -35,25 +37,28 @@ public:
     void selectReleased(); // this is a temporary name we need a better one
     void cleanMessage();
 
-private slots:
-    void on_btn_power_clicked();
+    void updatePowerState();
+    void powerBtnPressed();
+    void selectDuration();
 
 private:
     Ui::MainWindow *ui;
 
-    QPushButton powerOn;
-    QPushButton selectUp;
-    QPushButton slectDn;
-    QPushButton record;
-    QPushButton startSession;
-    QStringList historyMenu;
-    QLabel powerLED;
-    QLabel batteryLevelIndicator;
-    QLabel sessionIndicator;
+//    QPushButton powerOn;
+//    QPushButton selectUp;
+//    QPushButton slectDn;
+//    QPushButton record;
+//    QPushButton startSession;
+//    QStringList historyMenu;
+//    QLabel powerLED;
+//    QLabel batteryLevelIndicator;
+//    QLabel sessionIndicator;
     DataBase* db;
     Therapy* therapy;
     User* user;
     QElapsedTimer elapsedTimer;
+    QButtonGroup* sesDur;
+    bool powerState;
 
 };
 #endif // MAINWINDOW_H
