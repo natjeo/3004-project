@@ -5,6 +5,8 @@
 #include <QPushButton>
 #include <QLabel>
 #include <QStringList>
+#include <QButtonGroup>
+
 #include "DataBase.h"
 
 
@@ -23,24 +25,28 @@ public:
     void updateTimer();
     void navigateMenu();
     void electrodesPlaced(bool);
-    void select();
+//    void select();
 
-private slots:
-    void on_btn_power_clicked();
+    void updatePowerState();
+    void powerBtnPressed();
+    void selectDuration();
 
 private:
     Ui::MainWindow *ui;
 
-    QPushButton powerOn;
-    QPushButton selectUp;
-    QPushButton slectDn;
-    QPushButton record;
-    QPushButton startSession;
-    QStringList historyMenu;
-    QLabel powerLED;
-    QLabel batteryLevelIndicator;
-    QLabel sessionIndicator;
+//    QPushButton powerOn;
+//    QPushButton selectUp;
+//    QPushButton slectDn;
+//    QPushButton record;
+//    QPushButton startSession;
+//    QStringList historyMenu;
+//    QLabel powerLED;
+//    QLabel batteryLevelIndicator;
+//    QLabel sessionIndicator;
     DataBase* db;
+    QButtonGroup* sesDur;
+
+    bool powerState;
 
 };
 #endif // MAINWINDOW_H
