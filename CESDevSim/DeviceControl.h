@@ -37,32 +37,25 @@ public:
     void selectPressed(); // this is a temporary name we need a better one
     void selectReleased(); // this is a temporary name we need a better one
     void cleanMessage();
-		void indicateBatteryLevel();
-		void displayBatteryLevel(int, bool = false);
+    void indicateBatteryLevel();
+    void displayBatteryLevel(int, bool = false);
 
     void updatePowerState();
     void powerBtnPressed();
-    void selectDuration();
+    void selectDuration(int);
+    void selectSession(int);
 
 private:
     Ui::MainWindow *ui;
 
-//    QPushButton powerOn;
-//    QPushButton selectUp;
-//    QPushButton slectDn;
-//    QPushButton record;
-//    QPushButton startSession;
-//    QStringList historyMenu;
-//    QLabel powerLED;
-//    QLabel batteryLevelIndicator;
-//    QLabel sessionIndicator;
     DataBase* db;
     Therapy* therapy;
     User* user;
     Battery* battery;
-		QTimer *batteryDisplayTimer;
+    QTimer *batteryDisplayTimer;
     QElapsedTimer elapsedTimer;
-    QButtonGroup* sesDur;
+    QButtonGroup* selDur;
+    QButtonGroup* selSes;
     bool powerState;
 
 };

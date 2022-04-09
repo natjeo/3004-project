@@ -56,21 +56,117 @@ void MainWindow::powerBtnPressed()
     powerState  = !powerState;
     updatePowerState();
 
-    sesDur = new QButtonGroup();
-    sesDur->setId(ui->dur_20min, 1);
-    sesDur->addButton(ui->dur_20min);
-    sesDur->setId(ui->dur_45min, 2);
-    sesDur->addButton(ui->dur_45min);
-    sesDur->setExclusive(true);
-    connect(sesDur, static_cast<void(QButtonGroup::*)(QAbstractButton*)>(&QButtonGroup::buttonClicked), this, &MainWindow::selectDuration);
-//    connect(sesDur, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), [=](QAbstractButton *button){
-//        qDebug() << sesDur->id(button);
-//    });
+    // group duration button selections
+    selDur = new QButtonGroup();
+    selDur->addButton(ui->dur_20min);
+    selDur->setId(ui->dur_20min, 1);
+    selDur->addButton(ui->dur_45min);
+    selDur->setId(ui->dur_45min, 2);
+    selDur->addButton(ui->dur_3hrs);
+    selDur->setId(ui->dur_3hrs, 3);
+    selDur->addButton(ui->dur_custom);
+    selDur->setId(ui->dur_custom, 4);
+    selDur->setExclusive(true);
+    connect(selDur, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), [=](QAbstractButton* button){
+          button->setChecked(true);
+          selectDuration(selDur->checkedId());
+    });
+
+    // group session button selections
+    selSes = new QButtonGroup();
+    selSes->addButton(ui->ses_met);
+    selSes->setId(ui->ses_met, 1);
+    selSes->addButton(ui->ses_subDelta);
+    selSes->setId(ui->ses_subDelta, 2);
+    selSes->addButton(ui->ses_delta);
+    selSes->setId(ui->ses_delta, 3);
+    selSes->addButton(ui->ses_theta);
+    selSes->setId(ui->ses_theta, 4);
+    selSes->addButton(ui->ses_alpha);
+    selSes->setId(ui->ses_alpha, 5);
+    selSes->addButton(ui->ses_beta1);
+    selSes->setId(ui->ses_beta1, 6);
+    selSes->addButton(ui->ses_beta2);
+    selSes->setId(ui->ses_beta2, 7);
+    selSes->addButton(ui->ses_100Hz);
+    selSes->setId(ui->ses_100Hz, 8);
+    connect(selSes, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), [=](QAbstractButton* button){
+          button->setChecked(true);
+          selectSession(selSes->checkedId());
+    });
 }
 
-void MainWindow::selectDuration()
+void MainWindow::selectSession(int btnId)
 {
-    qDebug() << "test";
+    ui->ses_met->setStyleSheet("border-image: url(:/icons/MET.png);");
+    ui->ses_subDelta->setStyleSheet("border-image: url(:/icons/Sub-Delta.png);");
+    ui->ses_delta->setStyleSheet("border-image: url(:/icons/Delta.png);");
+    ui->ses_theta->setStyleSheet("border-image: url(:/icons/Theta.png);");
+    ui->ses_alpha->setStyleSheet("border-image: url(:/icons/Alpha.png);");
+    ui->ses_beta1->setStyleSheet("border-image: url(:/icons/Beta 1.png);");
+    ui->ses_beta2->setStyleSheet("border-image: url(:/icons/Beta 2.png);");
+    ui->ses_100Hz->setStyleSheet("border-image: url(:/icons/100Hz.png);");
+
+    switch (btnId){
+        case 1:
+            selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/MET_on.png);");
+            break;
+
+        case 2:
+            selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Sub-Delta_on.png);");
+            break;
+
+        case 3:
+            selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Delta_on.png);");
+            break;
+
+        case 4:
+            selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Theta_on.png);");
+            break;
+
+        case 5:
+            selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Alpha_on.png);");
+            break;
+
+        case 6:
+            selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Beta 1_on.png);");
+            break;
+
+        case 7:
+            selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/Beta 2_on.png);");
+            break;
+
+        case 8:
+            selSes->checkedButton()->setStyleSheet("border-image: url(:/icons/100Hz_on.png);");
+            break;
+
+    }
+}
+
+void MainWindow::selectDuration(int btnId)
+{
+    ui->dur_20min->setStyleSheet("border-image: url(:/icons/20min Session.png);");
+    ui->dur_45min->setStyleSheet("border-image: url(:/icons/45min Session.png);");
+    ui->dur_3hrs->setStyleSheet("border-image: url(:/icons/3hr Session.png);");
+    ui->dur_custom->setStyleSheet("border-image: url(:/icons/User Session.png);");
+
+    switch (btnId){
+        case 1:
+            selDur->checkedButton()->setStyleSheet("border-image: url(:/icons/20min Session_on.png);");
+            break;
+
+        case 2:
+            selDur->checkedButton()->setStyleSheet("border-image: url(:/icons/45min Session_on.png);");
+            break;
+
+        case 3:
+            selDur->checkedButton()->setStyleSheet("border-image: url(:/icons/3hr Session_on.png);");
+            break;
+
+        case 4:
+            selDur->checkedButton()->setStyleSheet("border-image: url(:/icons/Sessions_on.png);");
+            break;
+    }
 }
 
 void MainWindow::recordTherapy(){
