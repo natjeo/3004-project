@@ -49,5 +49,21 @@
         <file>icons/CES Output_on.png</file>
         <file>icons/Left_on.png</file>
         <file>icons/Right_on.png</file>
+        <file>icons/1_green.png</file>
+        <file>icons/2_green.png</file>
+        <file>icons/3_green.png</file>
+        <file>icons/4_yellow.png</file>
+        <file>icons/5_yellow.png</file>
+        <file>icons/6_yellow.png</file>
+        <file>icons/7_red.png</file>
+        <file>icons/8_red.png</file>
+        <file>icons/100Hz_on.png</file>
+        <file>icons/Alpha_on.png</file>
+        <file>icons/Beta 1_on.png</file>
+        <file>icons/Beta 2_on.png</file>
+        <file>icons/Delta_on.png</file>
+        <file>icons/MET_on.png</file>
+        <file>icons/Sub-Delta_on.png</file>
+        <file>icons/Theta_on.png</file>
     </qresource>
 </RCC>
