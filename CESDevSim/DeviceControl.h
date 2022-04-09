@@ -27,6 +27,9 @@ public:
     void recordTherapy();
     void displayHistory();
 
+private slots:
+    void on_btn_power_clicked();
+
 private:
     Ui::MainWindow *ui;
 

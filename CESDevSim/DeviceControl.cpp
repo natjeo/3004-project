@@ -38,6 +38,8 @@ MainWindow::MainWindow(QWidget *parent)
 
 }
 
+
+
 MainWindow::~MainWindow()
 {
     delete ui;
@@ -65,5 +67,10 @@ void MainWindow::displayHistory(){
     }
 
     ui->historyList->setVisible(true);
+}
+
+void MainWindow::on_btn_power_clicked()
+{
+
 }
 
