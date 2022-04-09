@@ -6,10 +6,11 @@
 #include <QLabel>
 #include <QStringList>
 #include <QElapsedTimer>
+#include <QTimer>
 #include <QButtonGroup>
 
 #include "DataBase.h"
-
+#include "Battery.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -36,6 +37,8 @@ public:
     void selectPressed(); // this is a temporary name we need a better one
     void selectReleased(); // this is a temporary name we need a better one
     void cleanMessage();
+		void indicateBatteryLevel();
+		void displayBatteryLevel(int, bool = false);
 
     void updatePowerState();
     void powerBtnPressed();
@@ -56,6 +59,8 @@ private:
     DataBase* db;
     Therapy* therapy;
     User* user;
+    Battery* battery;
+		QTimer *batteryDisplayTimer;
     QElapsedTimer elapsedTimer;
     QButtonGroup* sesDur;
     bool powerState;

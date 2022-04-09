@@ -29,6 +29,12 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
         //QString name = user->getName();
         //printf(name.toLatin1());
 
+				//this->battery = new Battery(user->getBatteryLvl());
+				this->battery = new Battery;
+				this->batteryDisplayTimer = new QTimer(this);
+				connect(this->batteryDisplayTimer, &QTimer::timeout, this, &MainWindow::indicateBatteryLevel);
+				this->batteryDisplayTimer->start(5000);
+
     connect(ui->btn_save, &QPushButton::pressed, this, &MainWindow::recordTherapy);
     connect(ui->btn_home, &QPushButton::pressed, this, &MainWindow::displayHistory);
     connect(ui->btn_up, &QPushButton::pressed, this, &MainWindow::pressUp);
@@ -165,6 +171,7 @@ void MainWindow::updatePowerState()
 
 MainWindow::~MainWindow()
 {
+  	this->db->updateBatteryLvl(this->user->getID(), this->battery->getLevel());
     delete ui;
 }
 
@@ -202,4 +209,27 @@ void MainWindow::selectReleased(){
     if (timeMilliSecs >= 1000) {
         updatePreferences();
     }
+}
+
+void MainWindow::indicateBatteryLevel() {
+	int batteryStatus = this->battery->curStatus();
+	int batteryLevel = this->battery->getLevelForDisplayGraph();
+
+	if (batteryStatus == NORMAL) {
+		this->displayBatteryLevel(batteryLevel);	
+	} else {
+		this->displayBatteryLevel(batteryLevel, true);	
+
+		if (batteryStatus == CRITICALLY_LOW) {
+			// End session early
+			qDebug() << "Ending session early";
+		}
+	}
+}
+
+void MainWindow::displayBatteryLevel(int levels, bool flash) {
+	// Update battery graph UI with int from 0-8
+	qDebug() << "Battery graph: " << levels;
+	if (flash)
+		qDebug() << "*FLASH*";
 }
