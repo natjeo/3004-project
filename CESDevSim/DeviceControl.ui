@@ -1078,6 +1078,16 @@ QPushButton:pressed {
      </property>
     </widget>
    </widget>
+   <widget class="QListWidget" name="recordsList">
+    <property name="geometry">
+     <rect>
+      <x>300</x>
+      <y>170</y>
+      <width>261</width>
+      <height>211</height>
+     </rect>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>
