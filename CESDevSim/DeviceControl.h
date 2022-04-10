@@ -61,6 +61,7 @@ private:
     QElapsedTimer elapsedTimer;
     QButtonGroup* selDur;
     QButtonGroup* selSes;
+    QLabel* graphBars[8];
     bool powerState;
     QTimer *sessionTimer;
     int sessionTime;

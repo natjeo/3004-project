@@ -21,11 +21,10 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
         //QString name = user->getName();
         //printf(name.toLatin1());
 
-                //this->battery = new Battery(user->getBatteryLvl());
-                this->battery = new Battery;
-                this->batteryDisplayTimer = new QTimer(this);
-                connect(this->batteryDisplayTimer, &QTimer::timeout, this, &MainWindow::indicateBatteryLevel);
-                this->batteryDisplayTimer->start(5000);
+				//this->battery = new Battery(user->getBatteryLvl());
+				this->battery = new Battery;
+				this->batteryDisplayTimer = new QTimer(this);
+				connect(this->batteryDisplayTimer, &QTimer::timeout, this, &MainWindow::indicateBatteryLevel);
 
     connect(ui->btn_save, &QPushButton::pressed, this, &MainWindow::recordTherapy);
     connect(ui->btn_home, &QPushButton::pressed, this, &MainWindow::displayHomeScreen);
@@ -47,6 +46,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
 void MainWindow::powerBtnPressed()
 {
+		qDebug() << "Pressed: " << powerState;
     powerState  = !powerState;
     updatePowerState();
 
@@ -88,6 +88,18 @@ void MainWindow::powerBtnPressed()
           button->setChecked(true);
           selectSession(selSes->checkedId());
     });
+
+		if (powerState) {
+			this->battery->setLevel(this->user->getBatteryLvl());
+			this->indicateBatteryLevel();
+			this->batteryDisplayTimer->start(5000);
+			this->battery->getTimer()->start(100);
+		} else {
+			qDebug() << "no power state";
+			this->batteryDisplayTimer->stop();
+			this->battery->getTimer()->stop();
+			this->user->setBatteryLvl(this->battery->getLevel());
+		}
 }
 
 void MainWindow::selectSession(int btnId)
@@ -153,7 +165,7 @@ void MainWindow::selectSession(int btnId)
     }
 }
 
-void MainWindow::selectDuration(int btnId)
+void MainWindow::selectDuration()
 {
     ui->dur_20min->setStyleSheet("border-image: url(:/icons/20min Session.png);");
     ui->dur_45min->setStyleSheet("border-image: url(:/icons/45min Session.png);");
@@ -289,7 +301,7 @@ void MainWindow::updatePowerState()
 
 MainWindow::~MainWindow()
 {
-  	this->db->updateBatteryLvl(this->user->getID(), this->battery->getLevel());
+		this->db->updateBatteryLvl(this->user->getID(), this->user->getBatteryLvl());
     delete ui;
 }
 
@@ -402,4 +414,12 @@ void MainWindow::stopSession(){
         this->sessionTime = 0;
     }
     displayHomeScreen();
+}
+
+void MainWindow::illuminateGraphBar(int level) {
+	graphBars[level - 1]->setStyleSheet("image: url(:/icons/power_on.png);");
+}
+
+void MainWindow::darkenGraphBar(int level) {
+	graphBars[level - 1]->setStyleSheet("image: url(:/icons/power_on.png);");
 }

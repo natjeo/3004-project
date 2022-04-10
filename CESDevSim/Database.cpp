@@ -5,12 +5,12 @@ DataBase::DataBase(){
     db.setDatabaseName("oasis");
 
     if (!(db.open())) {
-        throw "COULDN'T OPEN THE DATABASE";
+        /* throw "COULDN'T OPEN THE DATABASE"; */
     }
 
     // initialize db
     if (!initDB()) {
-        throw "COULDN'T INITIALIZE THE DATABASE";
+        /* throw "COULDN'T INITIALIZE THE DATABASE"; */
     }
 }
 

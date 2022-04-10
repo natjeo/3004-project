@@ -4,7 +4,6 @@ Battery::Battery(int initLevel){
 	this->timer = new QTimer(this);
 	this->level = initLevel;
 	connect(timer, &QTimer::timeout, this, &Battery::updateBattery);
-	timer->start(100);
 }
 
 void Battery::updateBattery() {
@@ -32,6 +31,10 @@ int Battery::curStatus() {
 
 int Battery::getLevel() {
 	return this->level;
+}
+
+void Battery::setLevel(int level) {
+	this->level = level;
 }
 
 int Battery::getLevelForDisplayGraph() {
