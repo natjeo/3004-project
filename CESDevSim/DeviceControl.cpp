@@ -364,10 +364,15 @@ void MainWindow::indicateBatteryLevel() {
 		this->displayBatteryLevel(batteryLevel, true);	
 
 		if (batteryStatus == CRITICALLY_LOW) {
-			// End session early
-			qDebug() << "Ending session early";
-            this->stopSession();
-		}
+            if (this->sessionTime == 0) {
+                displayMessage("Warning: Battery critically low");
+            } else {
+                displayMessage("Warning: Battery critically low, ending session");
+                this->stopSession();
+            }
+        } else {
+            displayMessage("Warning: Battery low");
+        }
 	}
 }
 
