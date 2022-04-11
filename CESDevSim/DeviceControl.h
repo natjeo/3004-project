@@ -8,6 +8,7 @@
 #include <QElapsedTimer>
 #include <QTimer>
 #include <QButtonGroup>
+#include <QThread>
 
 #include "DataBase.h"
 #include "Battery.h"
@@ -46,6 +47,8 @@ public:
     void selectSession(int);
     void updateSessionTimer();
     void stopSession();
+		void illuminateGraphBar(int);
+		void darkenGraphBar(int);
 
 public slots:
     void displayHistory();
@@ -61,7 +64,7 @@ private:
     QElapsedTimer elapsedTimer;
     QButtonGroup* selDur;
     QButtonGroup* selSes;
-    QLabel* graphBars[8];
+    QVector<QLabel*>* graphBars;
     bool powerState;
     QTimer *sessionTimer;
     int sessionTime;

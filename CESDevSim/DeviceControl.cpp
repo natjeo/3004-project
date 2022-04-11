@@ -42,6 +42,11 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     powerState = false;
     updatePowerState();
     connect(ui->btn_power, &QPushButton::released, this, &MainWindow::powerBtnPressed);
+
+		graphBars = new QVector<QLabel*> { ui->bar_1, ui->bar_2, ui->bar_3, ui->bar_4, ui->bar_5, ui->bar_6, ui->bar_7, ui->bar_8 };
+
+		illuminateGraphBar(1);
+		ui->bar_2->setStyleSheet("image: url(:/icons/2_green.png);");
 }
 
 void MainWindow::powerBtnPressed()
@@ -165,7 +170,7 @@ void MainWindow::selectSession(int btnId)
     }
 }
 
-void MainWindow::selectDuration()
+void MainWindow::selectDuration(int btnId)
 {
     ui->dur_20min->setStyleSheet("border-image: url(:/icons/20min Session.png);");
     ui->dur_45min->setStyleSheet("border-image: url(:/icons/45min Session.png);");
@@ -370,7 +375,14 @@ void MainWindow::indicateBatteryLevel() {
 
 void MainWindow::displayBatteryLevel(int levels, bool flash) {
 	// Update battery graph UI with int from 0-8
-    qDebug() << "Battery graph: " << levels;
+	qDebug() << "Battery graph: " << levels;
+	for (int i = 1; i <= levels; i++) {
+		illuminateGraphBar(i);
+	}
+	QThread::sleep(1);
+	for (int i = 1; i <= levels; i++) {
+		darkenGraphBar(i);
+	}
 	if (flash)
 		qDebug() << "*FLASH*";
 }
@@ -417,9 +429,25 @@ void MainWindow::stopSession(){
 }
 
 void MainWindow::illuminateGraphBar(int level) {
-	graphBars[level - 1]->setStyleSheet("image: url(:/icons/power_on.png);");
+	QString colour;
+
+	if (level <= 3) {
+		colour = QString("green");
+	} else if (level <= 6) {
+		colour = QString("yellow");
+	} else {
+		colour = QString("red");
+	}
+
+	QString file = QString("border-image: url(:/icons/%1_%2.png);").arg(QString::number(level), colour);
+	qDebug() << file;
+    qDebug() << graphBars->at(level - 1)->style();
+	graphBars->at(level - 1)->setStyleSheet(file);
+	graphBars->at(level - 1)->setVisible(true);
+    qDebug() << graphBars->at(level - 1)->style();
 }
 
 void MainWindow::darkenGraphBar(int level) {
-	graphBars[level - 1]->setStyleSheet("image: url(:/icons/power_on.png);");
+	QString file = QString("image: url(:/icons/%1.png);").arg(QString::number(level));
+	graphBars->at(level - 1)->setStyleSheet(file);
 }
