@@ -44,9 +44,6 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(ui->btn_power, &QPushButton::released, this, &MainWindow::powerBtnPressed);
 
 		graphBars = new QVector<QLabel*> { ui->bar_1, ui->bar_2, ui->bar_3, ui->bar_4, ui->bar_5, ui->bar_6, ui->bar_7, ui->bar_8 };
-
-		illuminateGraphBar(1);
-		ui->bar_2->setStyleSheet("image: url(:/icons/2_green.png);");
 }
 
 void MainWindow::powerBtnPressed()
@@ -97,8 +94,8 @@ void MainWindow::powerBtnPressed()
 		if (powerState) {
 			this->battery->setLevel(this->user->getBatteryLvl());
 			this->indicateBatteryLevel();
-			this->batteryDisplayTimer->start(5000);
-			this->battery->getTimer()->start(100);
+            this->batteryDisplayTimer->start(BATTERY_DISPLAY_INTERVAL);
+            this->battery->startDrain();
 		} else {
 			qDebug() << "no power state";
 			this->batteryDisplayTimer->stop();
@@ -369,6 +366,7 @@ void MainWindow::indicateBatteryLevel() {
 		if (batteryStatus == CRITICALLY_LOW) {
 			// End session early
 			qDebug() << "Ending session early";
+            this->stopSession();
 		}
 	}
 }
@@ -376,15 +374,21 @@ void MainWindow::indicateBatteryLevel() {
 void MainWindow::displayBatteryLevel(int levels, bool flash) {
 	// Update battery graph UI with int from 0-8
 	qDebug() << "Battery graph: " << levels;
-	for (int i = 1; i <= levels; i++) {
-		illuminateGraphBar(i);
-	}
-	QThread::sleep(1);
-	for (int i = 1; i <= levels; i++) {
-		darkenGraphBar(i);
-	}
-	if (flash)
-		qDebug() << "*FLASH*";
+    if (flash) {
+        flashGraphBar(levels, 3000, false);
+    } else {
+        for (int i = 1; i <= levels; i++) {
+            illuminateGraphBar(i);
+        }
+        QTime dieTime = QTime::currentTime().addSecs(1);
+        while( QTime::currentTime() < dieTime )
+        {
+        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+        }
+        for (int i = 1; i <= levels; i++) {
+            darkenGraphBar(i);
+        }
+    }
 }
 
 void MainWindow::displayHomeScreen(){
@@ -439,15 +443,38 @@ void MainWindow::illuminateGraphBar(int level) {
 		colour = QString("red");
 	}
 
-	QString file = QString("border-image: url(:/icons/%1_%2.png);").arg(QString::number(level), colour);
-	qDebug() << file;
-    qDebug() << graphBars->at(level - 1)->style();
+	QString file = QString("image: url(:/icons/%1_%2.png);").arg(QString::number(level), colour);
 	graphBars->at(level - 1)->setStyleSheet(file);
-	graphBars->at(level - 1)->setVisible(true);
-    qDebug() << graphBars->at(level - 1)->style();
+    /* qDebug() << graphBars->at(level - 1)->style(); */
 }
 
 void MainWindow::darkenGraphBar(int level) {
 	QString file = QString("image: url(:/icons/%1.png);").arg(QString::number(level));
 	graphBars->at(level - 1)->setStyleSheet(file);
+}
+
+void MainWindow::flashGraphBar(int level, int msecDuration, bool singleItem) {
+    int n = 1;
+    int startBar = singleItem ? level : 1;
+    QTimer* intervalTimer = new QTimer(this);
+    connect(intervalTimer, &QTimer::timeout, this, [=, &n]() {
+        if (n % 2 == 0) {
+            for (int i = startBar; i <= level; i++)
+                darkenGraphBar(i);
+        } else {
+            for (int i = startBar; i <= level; i++)
+                illuminateGraphBar(i);
+        }
+
+        n++;
+    });
+    intervalTimer->start(300);
+    QTime dieTime = QTime::currentTime().addMSecs(msecDuration);
+    while( QTime::currentTime() < dieTime )
+    {
+        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+    }
+    intervalTimer->stop();
+    for (int i = startBar; i <= level; i++)
+        darkenGraphBar(i);
 }

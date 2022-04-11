@@ -10,6 +10,11 @@ void Battery::updateBattery() {
 	this->drainBattery(1);
 }
 
+void Battery::startDrain() {
+    int timeout = (BATTERY_LENGTH_MINS * 60 * 1000) / INIT_LEVEL;
+    timer->start(timeout);
+}
+
 void Battery::drainBattery(int reduction){
 	if (this->level < reduction) {
 		this->level = 0;

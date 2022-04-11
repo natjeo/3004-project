@@ -9,9 +9,12 @@
 #include <QTimer>
 #include <QButtonGroup>
 #include <QThread>
+#include <QTime>
 
 #include "DataBase.h"
 #include "Battery.h"
+
+#define BATTERY_DISPLAY_INTERVAL 10000
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -49,6 +52,7 @@ public:
     void stopSession();
 		void illuminateGraphBar(int);
 		void darkenGraphBar(int);
+        void flashGraphBar(int, int, bool = true);
 
 public slots:
     void displayHistory();
