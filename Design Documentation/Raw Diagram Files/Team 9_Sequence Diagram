@@ -1,1 +1,34 @@
-<mxfile host="app.diagrams.net" modified="2022-04-12T14:53:52.050Z" agent="5.0 (Windows)" version="17.4.3" etag="6QVa0_9VX2Z5w_n-qYqN" type="github"><diagram id="X-XZHoCwuHIVBD_M_k_-">UzV2zq1wL0osyPDNT0nNUTV2VTV2LsrPL4GwciucU3NyVI0MMlNUjV1UjYwMgFjVyA2HrCFY1qAgsSg1rwSLBiADYTaQg2Y1AA==</diagram></mxfile>
+<mxfile host="app.diagrams.net" modified="2022-04-12T15:41:10.427Z" agent="5.0 (Windows)" etag="X0sh1mvTf2cYpgAEHa67" version="17.4.3" type="github">
+  <diagram id="X-XZHoCwuHIVBD_M_k_-" name="Page-1">
+    <mxGraphModel dx="652" dy="378" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="R1G6sV-_U92VsIVqcOe9-8" value="power()" style="html=1;verticalAlign=bottom;endArrow=block;rounded=0;strokeWidth=0.5;fontFamily=Roboto Condensed;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BCondensed;fontSize=10.5;" edge="1" parent="1">
+          <mxGeometry width="80" relative="1" as="geometry">
+            <mxPoint x="220" y="160.00000000000006" as="sourcePoint" />
+            <mxPoint x="359.7500000000001" y="160.00000000000006" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R1G6sV-_U92VsIVqcOe9-1" value="User" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;strokeWidth=0.5;fontFamily=Roboto Condensed;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BCondensed;fontSize=10.5;rounded=1;strokeColor=#CCCCCC;" vertex="1" parent="1">
+          <mxGeometry x="40" y="40" width="80" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="R1G6sV-_U92VsIVqcOe9-3" value="powerBtn pressed" style="html=1;verticalAlign=bottom;endArrow=block;rounded=0;strokeWidth=0.5;fontFamily=Roboto Condensed;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BCondensed;fontSize=10.5;entryX=0.5;entryY=0.125;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="R1G6sV-_U92VsIVqcOe9-1" target="R1G6sV-_U92VsIVqcOe9-9">
+          <mxGeometry width="80" relative="1" as="geometry">
+            <mxPoint x="40" y="80" as="sourcePoint" />
+            <mxPoint x="170" y="80" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="R1G6sV-_U92VsIVqcOe9-4" value="UI" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;strokeWidth=0.5;fontFamily=Roboto Condensed;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BCondensed;fontSize=10.5;rounded=1;strokeColor=#CCCCCC;" vertex="1" parent="1">
+          <mxGeometry x="180" y="40" width="80" height="290" as="geometry" />
+        </mxCell>
+        <mxCell id="R1G6sV-_U92VsIVqcOe9-9" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;rounded=1;dashed=1;fontSize=9;strokeColor=#CCCCCC;strokeWidth=0.5;fillColor=#CCCCCC;" vertex="1" parent="R1G6sV-_U92VsIVqcOe9-4">
+          <mxGeometry x="37.5" y="70" width="5" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="R1G6sV-_U92VsIVqcOe9-6" value="MainWindow" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;strokeWidth=0.5;fontFamily=Roboto Condensed;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BCondensed;fontSize=10.5;rounded=1;strokeColor=#CCCCCC;" vertex="1" parent="1">
+          <mxGeometry x="320" y="40" width="80" height="290" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
