@@ -225,9 +225,11 @@ void MainWindow::pressUp()
 {
     int intensity = this->therapy->getIntensity();
     if (intensity < 8){
-        this->therapy->setIntensity(intensity+1);
+        intensity++;
+        this->therapy->setIntensity(intensity);
     }
     qDebug() << this->therapy->getIntensity();
+    flashGraphBar(intensity, 500, true);
     qInfo("up");
 }
 
@@ -235,9 +237,11 @@ void MainWindow::pressDn()
 {
     int intensity = this->therapy->getIntensity();
     if (intensity > 1){
-        this->therapy->setIntensity(intensity-1);
+        intensity--;
+        this->therapy->setIntensity(intensity);
     }
     qDebug() << this->therapy->getIntensity();
+    flashGraphBar(intensity, 500, true);
     qInfo("down");
 }
 
