@@ -13,14 +13,19 @@
 #define LOW_LEVEL 25
 #define CRITICALLY_LOW_LEVEL 12
 
+#define BATTERY_LENGTH_MINS 1
+#define INIT_LEVEL 100
+
 class Battery: public QObject {
 	public:
-		Battery(int = 100);
+        Battery(int = INIT_LEVEL);
 
 		int curStatus();
 		int getLevel();
+		void setLevel(int);
 		int getLevelForDisplayGraph();
 		void drainBattery(int);
+        void startDrain();
 		QTimer* getTimer();
 
 	private:

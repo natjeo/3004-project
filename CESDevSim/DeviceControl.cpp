@@ -21,11 +21,10 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
         //QString name = user->getName();
         //printf(name.toLatin1());
 
-                //this->battery = new Battery(user->getBatteryLvl());
-                this->battery = new Battery;
-                this->batteryDisplayTimer = new QTimer(this);
-                connect(this->batteryDisplayTimer, &QTimer::timeout, this, &MainWindow::indicateBatteryLevel);
-                this->batteryDisplayTimer->start(5000);
+				//this->battery = new Battery(user->getBatteryLvl());
+				this->battery = new Battery;
+				this->batteryDisplayTimer = new QTimer(this);
+				connect(this->batteryDisplayTimer, &QTimer::timeout, this, &MainWindow::indicateBatteryLevel);
 
     connect(ui->btn_save, &QPushButton::pressed, this, &MainWindow::recordTherapy);
     connect(ui->btn_home, &QPushButton::pressed, this, &MainWindow::displayHomeScreen);
@@ -43,10 +42,13 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     powerState = false;
     updatePowerState();
     connect(ui->btn_power, &QPushButton::released, this, &MainWindow::powerBtnPressed);
+
+		graphBars = new QVector<QLabel*> { ui->bar_1, ui->bar_2, ui->bar_3, ui->bar_4, ui->bar_5, ui->bar_6, ui->bar_7, ui->bar_8 };
 }
 
 void MainWindow::powerBtnPressed()
 {
+		qDebug() << "Pressed: " << powerState;
     powerState  = !powerState;
     updatePowerState();
 
@@ -88,6 +90,18 @@ void MainWindow::powerBtnPressed()
           button->setChecked(true);
           selectSession(selSes->checkedId());
     });
+
+		if (powerState) {
+			this->battery->setLevel(this->user->getBatteryLvl());
+			this->indicateBatteryLevel();
+            this->batteryDisplayTimer->start(BATTERY_DISPLAY_INTERVAL);
+            this->battery->startDrain();
+		} else {
+			qDebug() << "no power state";
+			this->batteryDisplayTimer->stop();
+			this->battery->getTimer()->stop();
+			this->user->setBatteryLvl(this->battery->getLevel());
+		}
 }
 
 void MainWindow::selectSession(int btnId)
@@ -289,7 +303,7 @@ void MainWindow::updatePowerState()
 
 MainWindow::~MainWindow()
 {
-  	this->db->updateBatteryLvl(this->user->getID(), this->battery->getLevel());
+		this->db->updateBatteryLvl(this->user->getID(), this->user->getBatteryLvl());
     delete ui;
 }
 
@@ -350,17 +364,36 @@ void MainWindow::indicateBatteryLevel() {
 		this->displayBatteryLevel(batteryLevel, true);	
 
 		if (batteryStatus == CRITICALLY_LOW) {
-			// End session early
-			qDebug() << "Ending session early";
-		}
+            if (this->sessionTime == 0) {
+                displayMessage("Warning: Battery critically low");
+            } else {
+                displayMessage("Warning: Battery critically low, ending session");
+                this->stopSession();
+            }
+        } else {
+            displayMessage("Warning: Battery low");
+        }
 	}
 }
 
 void MainWindow::displayBatteryLevel(int levels, bool flash) {
 	// Update battery graph UI with int from 0-8
-    qDebug() << "Battery graph: " << levels;
-	if (flash)
-		qDebug() << "*FLASH*";
+	qDebug() << "Battery graph: " << levels;
+    if (flash) {
+        flashGraphBar(levels, 3000, false);
+    } else {
+        for (int i = 1; i <= levels; i++) {
+            illuminateGraphBar(i);
+        }
+        QTime dieTime = QTime::currentTime().addSecs(1);
+        while( QTime::currentTime() < dieTime )
+        {
+        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+        }
+        for (int i = 1; i <= levels; i++) {
+            darkenGraphBar(i);
+        }
+    }
 }
 
 void MainWindow::displayHomeScreen(){
@@ -402,4 +435,51 @@ void MainWindow::stopSession(){
         this->sessionTime = 0;
     }
     displayHomeScreen();
+}
+
+void MainWindow::illuminateGraphBar(int level) {
+	QString colour;
+
+	if (level <= 3) {
+		colour = QString("green");
+	} else if (level <= 6) {
+		colour = QString("yellow");
+	} else {
+		colour = QString("red");
+	}
+
+	QString file = QString("image: url(:/icons/%1_%2.png);").arg(QString::number(level), colour);
+	graphBars->at(level - 1)->setStyleSheet(file);
+    /* qDebug() << graphBars->at(level - 1)->style(); */
+}
+
+void MainWindow::darkenGraphBar(int level) {
+	QString file = QString("image: url(:/icons/%1.png);").arg(QString::number(level));
+	graphBars->at(level - 1)->setStyleSheet(file);
+}
+
+void MainWindow::flashGraphBar(int level, int msecDuration, bool singleItem) {
+    int n = 1;
+    int startBar = singleItem ? level : 1;
+    QTimer* intervalTimer = new QTimer(this);
+    connect(intervalTimer, &QTimer::timeout, this, [=, &n]() {
+        if (n % 2 == 0) {
+            for (int i = startBar; i <= level; i++)
+                darkenGraphBar(i);
+        } else {
+            for (int i = startBar; i <= level; i++)
+                illuminateGraphBar(i);
+        }
+
+        n++;
+    });
+    intervalTimer->start(300);
+    QTime dieTime = QTime::currentTime().addMSecs(msecDuration);
+    while( QTime::currentTime() < dieTime )
+    {
+        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+    }
+    intervalTimer->stop();
+    for (int i = startBar; i <= level; i++)
+        darkenGraphBar(i);
 }
