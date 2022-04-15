@@ -6,6 +6,7 @@
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
+    this->userInactive = new QTimer(this);
 
     // setup database for user
     db = new DataBase();
@@ -44,7 +45,13 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     updatePowerState();
     connect(ui->btn_power, &QPushButton::released, this, &MainWindow::powerBtnPressed);
 
-		graphBars = new QVector<QLabel*> { ui->bar_1, ui->bar_2, ui->bar_3, ui->bar_4, ui->bar_5, ui->bar_6, ui->bar_7, ui->bar_8 };
+    graphBars = new QVector<QLabel*> { ui->bar_1, ui->bar_2, ui->bar_3, ui->bar_4, ui->bar_5, ui->bar_6, ui->bar_7, ui->bar_8 };
+
+    QList<QPushButton *> allButtons = this->findChildren<QPushButton *>();
+    QPushButton *button;
+    foreach (button, allButtons){
+        button->installEventFilter(this);
+    }
 }
 
 void MainWindow::powerBtnPressed()
@@ -301,8 +308,10 @@ void MainWindow::updatePowerState()
 
     if (powerState){
         ui->powerLED->setStyleSheet("image: url(:/icons/power_on.png);");
-        this->therapy = new Therapy("MET", 20, db->getPreference("MET"), false);
+        this->therapy = new Therapy("MET", 20, db->getPreference("MET"));
         displayHomeScreen();
+        connect(this->userInactive, &QTimer::timeout, this, &MainWindow::autoPower);
+        this->userInactive->start(5000);
     } else {
         ui->powerLED->setStyleSheet("image: url(:/icons/power_off.png);");
         if (this->sessionTime > 0) {
@@ -392,9 +401,8 @@ void MainWindow::selectPressed(){
         this->sessionTimer = new QTimer(this);
         connect(this->sessionTimer, &QTimer::timeout, this, &MainWindow::updateSessionTimer);
         this->sessionTimer->start(1000);
-        this->therapy->updateTherapyInProgress(true);
     } else {
-        displayMessage("Plase select everything before starting therapy");
+        displayMessage("Plase select intensity before starting therapy");
     }
 }
 
@@ -493,6 +501,13 @@ void MainWindow::stopSession(){
     displayHomeScreen();
 }
 
+bool MainWindow::eventFilter(QObject *obj, QEvent *event){
+    if (event->type()==QEvent::MouseButtonPress){
+         this->userInactive->start(5000);
+        return false;
+    }
+}
+
 void MainWindow::illuminateGraphBar(int level) {
 	QString colour;
 
@@ -540,5 +555,15 @@ void MainWindow::delay(int msec) {
     while( QTime::currentTime() < dieTime )
     {
         QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+    }
+}
+
+void MainWindow::autoPower(){
+    if (this->sessionTime <= 0) {
+        this->userInactive->stop();
+        this->powerState = false;
+        updatePowerState();
+    } else {
+        this->userInactive->start(5000);
     }
 }
