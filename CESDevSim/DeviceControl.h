@@ -70,6 +70,7 @@ private:
     QButtonGroup* selSes;
     QVector<QLabel*>* graphBars;
     bool powerState;
+    bool isAdjustingIntensity;
     QTimer *sessionTimer;
     int sessionTime;
 };
