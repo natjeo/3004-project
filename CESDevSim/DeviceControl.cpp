@@ -48,7 +48,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
 void MainWindow::powerBtnPressed()
 {
-		qDebug() << "Pressed: " << powerState;
+    qDebug() << "Pressed: " << powerState;
     powerState  = !powerState;
     updatePowerState();
 
@@ -91,17 +91,17 @@ void MainWindow::powerBtnPressed()
           selectSession(selSes->checkedId());
     });
 
-		if (powerState) {
-			this->battery->setLevel(this->user->getBatteryLvl());
-			this->indicateBatteryLevel();
-            this->batteryDisplayTimer->start(BATTERY_DISPLAY_INTERVAL);
-            this->battery->startDrain();
-		} else {
-			qDebug() << "no power state";
-			this->batteryDisplayTimer->stop();
-			this->battery->getTimer()->stop();
-			this->user->setBatteryLvl(this->battery->getLevel());
-		}
+    if (powerState) {
+        this->battery->setLevel(this->user->getBatteryLvl());
+        this->indicateBatteryLevel();
+        this->batteryDisplayTimer->start(BATTERY_DISPLAY_INTERVAL);
+        this->battery->startDrain();
+    } else {
+        qDebug() << "no power state";
+        this->batteryDisplayTimer->stop();
+        this->battery->getTimer()->stop();
+        this->user->setBatteryLvl(this->battery->getLevel());
+    }
 }
 
 void MainWindow::selectSession(int btnId)
@@ -205,7 +205,7 @@ void MainWindow::recordTherapy(){
             displayMessage("therapy saved *SOMEBODY SPELL SUCCESSFULLY CORRECTLY FOR ME*"); //update this!!!!!!!!!!!!!!
         }
     } else {
-        displayMessage("Plase select everything before starting therapy");
+        displayMessage("Plase select intensity before starting therapy");
     }
 }
 
@@ -293,7 +293,7 @@ void MainWindow::updatePowerState()
 
     if (powerState){
         ui->powerLED->setStyleSheet("image: url(:/icons/power_on.png);");
-        this->therapy = new Therapy("MET", 20, db->getPreference("MET"));
+        this->therapy = new Therapy("MET", 20, db->getPreference("MET"), false);
         displayHomeScreen();
     } else {
         ui->powerLED->setStyleSheet("image: url(:/icons/power_off.png);");
@@ -331,15 +331,17 @@ void MainWindow::displayMessage(QString message){
         ui->table_menu->setScene(scene);
 }
 
+// start therapy session
 void MainWindow::selectPressed(){
     elapsedTimer.start();
     if (this->therapy->readyToStart()) {
         ui->btn_history->setVisible(false);
         ui->table_menu->scene()->clear();
-       this->sessionTime = this->therapy->getDuration() * 60;
+        this->sessionTime = this->therapy->getDuration()/20 * 10;
         this->sessionTimer = new QTimer(this);
         connect(this->sessionTimer, &QTimer::timeout, this, &MainWindow::updateSessionTimer);
         this->sessionTimer->start(1000);
+        this->therapy->updateTherapyInProgress(true);
     } else {
         displayMessage("Plase select everything before starting therapy");
     }
@@ -401,7 +403,7 @@ void MainWindow::displayBatteryLevel(int levels, bool flash) {
 }
 
 void MainWindow::displayHomeScreen(){
-    if (this->sessionTime == 0) {
+    if (this->powerState && this->sessionTime == 0) {
         ui->btn_history->setVisible(true);
         ui->recordsList->setVisible(false);
         QGraphicsScene* scene = new QGraphicsScene;
@@ -415,7 +417,7 @@ void MainWindow::displayHomeScreen(){
 }
 
 void MainWindow::updateSessionTimer(){
-    if (sessionTimer > 0) {
+    if (this->sessionTime > 0) {
         ui->table_menu->scene()->clear();
         QGraphicsTextItem *text = ui->table_menu->scene()->addText("Time before the end of the session:");
         text->setPos(20, 20);
@@ -430,9 +432,12 @@ void MainWindow::updateSessionTimer(){
         timerText->setPos(85, 50);
     } else {
         this->sessionTimer->stop();
+        this->sessionTime = 0;
+        stopSession();
     }
 }
 
+// end therapy session
 void MainWindow::stopSession(){
     if (this->sessionTime > 0) {
         this->sessionTimer->stop();
