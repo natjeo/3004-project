@@ -40,6 +40,7 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     // setup device power status
     powerState = false;
+    isAdjustingIntensity = false;
     updatePowerState();
     connect(ui->btn_power, &QPushButton::released, this, &MainWindow::powerBtnPressed);
 
@@ -223,6 +224,7 @@ void MainWindow::displayHistory(){
 
 void MainWindow::pressUp()
 {
+    this->isAdjustingIntensity = true;
     int intensity = this->therapy->getIntensity();
     if (intensity < 8){
         intensity++;
@@ -231,10 +233,12 @@ void MainWindow::pressUp()
     qDebug() << this->therapy->getIntensity();
     flashGraphBar(intensity, 500, true);
     qInfo("up");
+    this->isAdjustingIntensity = false;
 }
 
 void MainWindow::pressDn()
 {
+    this->isAdjustingIntensity = true;
     int intensity = this->therapy->getIntensity();
     if (intensity > 1){
         intensity--;
@@ -243,6 +247,7 @@ void MainWindow::pressDn()
     qDebug() << this->therapy->getIntensity();
     flashGraphBar(intensity, 500, true);
     qInfo("down");
+    this->isAdjustingIntensity = false;
 }
 
 void MainWindow::updatePowerState()
@@ -383,7 +388,7 @@ void MainWindow::indicateBatteryLevel() {
 void MainWindow::displayBatteryLevel(int levels, bool flash) {
 	// Update battery graph UI with int from 0-8
 	qDebug() << "Battery graph: " << levels;
-    if (flash) {
+    if (flash && !this->isAdjustingIntensity) {
         flashGraphBar(levels, 3000, false);
     } else {
         for (int i = 1; i <= levels; i++) {
