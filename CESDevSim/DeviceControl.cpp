@@ -5,7 +5,10 @@
 
 MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWindow)
 {
+
     ui->setupUi(this);
+    this->userInactive = new QTimer(this);
+
 
     // setup database for user
     db = new DataBase();
@@ -40,11 +43,17 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
 
     // setup device power status
     powerState = false;
-    isAdjustingIntensity = false;
     updatePowerState();
     connect(ui->btn_power, &QPushButton::released, this, &MainWindow::powerBtnPressed);
 
-		graphBars = new QVector<QLabel*> { ui->bar_1, ui->bar_2, ui->bar_3, ui->bar_4, ui->bar_5, ui->bar_6, ui->bar_7, ui->bar_8 };
+    graphBars = new QVector<QLabel*> { ui->bar_1, ui->bar_2, ui->bar_3, ui->bar_4, ui->bar_5, ui->bar_6, ui->bar_7, ui->bar_8 };
+
+
+    QList<QPushButton *> allButtons = this->findChildren<QPushButton *>();
+    QPushButton *button;
+    foreach (button, allButtons){
+        button->installEventFilter(this);
+    }
 }
 
 void MainWindow::powerBtnPressed()
@@ -224,34 +233,26 @@ void MainWindow::displayHistory(){
 
 void MainWindow::pressUp()
 {
-    if (!this->isRunningTest){
-        this->isAdjustingIntensity = true;
-        int intensity = this->therapy->getIntensity();
-        if (intensity < 8){
-            intensity++;
-            this->therapy->setIntensity(intensity);
-        }
-        qDebug() << this->therapy->getIntensity();
-        flashGraphBar(intensity, 500, intensity);
-        qInfo("up");
-        this->isAdjustingIntensity = false;
+    int intensity = this->therapy->getIntensity();
+    if (intensity < 8){
+        intensity++;
+        this->therapy->setIntensity(intensity);
     }
+    qDebug() << this->therapy->getIntensity();
+    flashGraphBar(intensity, 500, true);
+    qInfo("up");
 }
 
 void MainWindow::pressDn()
 {
     int intensity = this->therapy->getIntensity();
-    if (!this->isRunningTest && intensity > 0){
-        this->isAdjustingIntensity = true;
-        if (intensity > 1){
-            intensity--;
-            this->therapy->setIntensity(intensity);
-        }
-        qDebug() << this->therapy->getIntensity();
-        flashGraphBar(intensity, 500, intensity);
-        qInfo("down");
-        this->isAdjustingIntensity = false;
+    if (intensity > 1){
+        intensity--;
+        this->therapy->setIntensity(intensity);
     }
+    qDebug() << this->therapy->getIntensity();
+    flashGraphBar(intensity, 500, true);
+    qInfo("down");
 }
 
 void MainWindow::updatePowerState()
@@ -266,6 +267,7 @@ void MainWindow::updatePowerState()
     ui->connection_CES->setVisible(powerState);
     ui->connection_audio->setVisible(powerState);
 
+    ui->batteryLevel->setVisible(powerState);
     ui->skin_menu->setVisible(powerState);
     ui->table_menu->setVisible(powerState);
 
@@ -301,8 +303,10 @@ void MainWindow::updatePowerState()
 
     if (powerState){
         ui->powerLED->setStyleSheet("image: url(:/icons/power_on.png);");
-        this->therapy = new Therapy("MET", 20, db->getPreference("MET"), false);
+        this->therapy = new Therapy("MET", 20, db->getPreference("MET"));
         displayHomeScreen();
+        connect(this->userInactive, &QTimer::timeout, this, &MainWindow::testFunc);
+        this->userInactive->start(5000);
     } else {
         ui->powerLED->setStyleSheet("image: url(:/icons/power_off.png);");
         if (this->sessionTime > 0) {
@@ -339,60 +343,16 @@ void MainWindow::displayMessage(QString message){
         ui->table_menu->setScene(scene);
 }
 
-void MainWindow::performConnectionTest() {
-    this->isRunningTest = true;
-    int n = 1;
-		QLabel* modeLight;
-		QString modeLightOnStyle;
-		QString modeLightOffStyle;
-		if (this->therapy->getSession() == "Sub-Delta") {
-			modeLight = ui->mode_R;
-			modeLightOnStyle = "image: url(:/icons/Right_on.png);";
-			modeLightOffStyle = "image: url(:/icons/Right.png);";
-		} else {
-			modeLight = ui->mode_L;
-			modeLightOnStyle = "image: url(:/icons/Left_on.png);";
-			modeLightOffStyle = "image: url(:/icons/Left.png);";
-		}
-
-    QTimer* intervalTimer = new QTimer(this);
-    connect(intervalTimer, &QTimer::timeout, this, [=, &n]() {
-				modeLight->setStyleSheet(n % 2 == 0 ? modeLightOffStyle : modeLightOnStyle);
-        n++;
-    });
-    intervalTimer->start(300);
-    flashGraphBar(8, 3000, 7);
-		for (int i = 4; i <= 6; i++) {
-				illuminateGraphBar(i);
-		}
-		delay(2000);
-		for (int i = 4; i <= 6; i++) {
-				darkenGraphBar(i);
-		}
-		for (int i = 1; i <= 3; i++) {
-				illuminateGraphBar(i);
-		}
-		delay(2000);
-		for (int i = 1; i <= 3; i++) {
-				darkenGraphBar(i);
-		}
-    intervalTimer->stop();
-    modeLight->setStyleSheet(modeLightOffStyle);
-    this->isRunningTest = false;
-}
-
 // start therapy session
 void MainWindow::selectPressed(){
     elapsedTimer.start();
     if (this->therapy->readyToStart()) {
         ui->btn_history->setVisible(false);
         ui->table_menu->scene()->clear();
-				this->performConnectionTest();
         this->sessionTime = this->therapy->getDuration()/20 * 10;
         this->sessionTimer = new QTimer(this);
         connect(this->sessionTimer, &QTimer::timeout, this, &MainWindow::updateSessionTimer);
         this->sessionTimer->start(1000);
-        this->therapy->updateTherapyInProgress(true);
     } else {
         displayMessage("Plase select everything before starting therapy");
     }
@@ -436,13 +396,17 @@ void MainWindow::indicateBatteryLevel() {
 void MainWindow::displayBatteryLevel(int levels, bool flash) {
 	// Update battery graph UI with int from 0-8
 	qDebug() << "Battery graph: " << levels;
-    if (flash && !this->isAdjustingIntensity && !this->isRunningTest) {
-        flashGraphBar(levels, 3000);
+    if (flash) {
+        flashGraphBar(levels, 3000, false);
     } else {
         for (int i = 1; i <= levels; i++) {
             illuminateGraphBar(i);
         }
-				delay(1000);
+        QTime dieTime = QTime::currentTime().addSecs(1);
+        while( QTime::currentTime() < dieTime )
+        {
+        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+        }
         for (int i = 1; i <= levels; i++) {
             darkenGraphBar(i);
         }
@@ -493,6 +457,13 @@ void MainWindow::stopSession(){
     displayHomeScreen();
 }
 
+bool MainWindow::eventFilter(QObject *obj, QEvent *event){
+    if (event->type()==QEvent::MouseButtonPress){
+         this->userInactive->start(5000);
+        return false;
+    }
+}
+
 void MainWindow::illuminateGraphBar(int level) {
 	QString colour;
 
@@ -514,31 +485,39 @@ void MainWindow::darkenGraphBar(int level) {
 	graphBars->at(level - 1)->setStyleSheet(file);
 }
 
-void MainWindow::flashGraphBar(int level, int msecDuration, int startLevel) {
+void MainWindow::flashGraphBar(int level, int msecDuration, bool singleItem) {
     int n = 1;
+    int startBar = singleItem ? level : 1;
     QTimer* intervalTimer = new QTimer(this);
     connect(intervalTimer, &QTimer::timeout, this, [=, &n]() {
         if (n % 2 == 0) {
-            for (int i = startLevel; i <= level; i++)
+            for (int i = startBar; i <= level; i++)
                 darkenGraphBar(i);
         } else {
-            for (int i = startLevel; i <= level; i++)
+            for (int i = startBar; i <= level; i++)
                 illuminateGraphBar(i);
         }
 
         n++;
     });
     intervalTimer->start(300);
-		delay(msecDuration);
-    intervalTimer->stop();
-    for (int i = startLevel; i <= level; i++)
-        darkenGraphBar(i);
-}
-
-void MainWindow::delay(int msec) {
-    QTime dieTime = QTime::currentTime().addMSecs(msec);
+    QTime dieTime = QTime::currentTime().addMSecs(msecDuration);
     while( QTime::currentTime() < dieTime )
     {
         QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
+    }
+    intervalTimer->stop();
+    for (int i = startBar; i <= level; i++)
+        darkenGraphBar(i);
+}
+
+void MainWindow::testFunc(){
+    if (this->sessionTime <= 0) {
+        this->userInactive->stop();
+        qInfo("hereeeee");
+        this->powerState = false;
+        updatePowerState();
+    } else {
+        this->userInactive->start(5000);
     }
 }
