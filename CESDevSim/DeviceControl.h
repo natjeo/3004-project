@@ -59,13 +59,12 @@ private:
     void selectDuration(int);
     void selectSession(int);
     void updateSessionTimer();
-    void stopSession();
-		void illuminateGraphBar(int);
-		void darkenGraphBar(int);
-        void flashGraphBar(int, int, int = 1);
-		void performConnectionTest();
-
-		void delay(int);
+    void stopSession();	
+    void illuminateGraphBar(int);
+    void darkenGraphBar(int);
+    void flashGraphBar(int, int, int = 1);
+    void performConnectionTest();
+    void delay(int);
 
     Battery* battery;
     QTimer *batteryDisplayTimer;
@@ -75,6 +74,7 @@ private:
     QVector<QLabel*>* graphBars;
     bool powerState;
     bool isAdjustingIntensity;
+    bool isRunningTest;
     QTimer *sessionTimer;
     int sessionTime;
 };

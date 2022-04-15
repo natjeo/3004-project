@@ -224,30 +224,34 @@ void MainWindow::displayHistory(){
 
 void MainWindow::pressUp()
 {
-    this->isAdjustingIntensity = true;
-    int intensity = this->therapy->getIntensity();
-    if (intensity < 8){
-        intensity++;
-        this->therapy->setIntensity(intensity);
+    if (!this->isRunningTest){
+        this->isAdjustingIntensity = true;
+        int intensity = this->therapy->getIntensity();
+        if (intensity < 8){
+            intensity++;
+            this->therapy->setIntensity(intensity);
+        }
+        qDebug() << this->therapy->getIntensity();
+        flashGraphBar(intensity, 500, intensity);
+        qInfo("up");
+        this->isAdjustingIntensity = false;
     }
-    qDebug() << this->therapy->getIntensity();
-    flashGraphBar(intensity, 500, intensity);
-    qInfo("up");
-    this->isAdjustingIntensity = false;
 }
 
 void MainWindow::pressDn()
 {
-    this->isAdjustingIntensity = true;
     int intensity = this->therapy->getIntensity();
-    if (intensity > 1){
-        intensity--;
-        this->therapy->setIntensity(intensity);
+    if (!this->isRunningTest && intensity > 0){
+        this->isAdjustingIntensity = true;
+        if (intensity > 1){
+            intensity--;
+            this->therapy->setIntensity(intensity);
+        }
+        qDebug() << this->therapy->getIntensity();
+        flashGraphBar(intensity, 500, intensity);
+        qInfo("down");
+        this->isAdjustingIntensity = false;
     }
-    qDebug() << this->therapy->getIntensity();
-    flashGraphBar(intensity, 500, intensity);
-    qInfo("down");
-    this->isAdjustingIntensity = false;
 }
 
 void MainWindow::updatePowerState()
@@ -262,7 +266,6 @@ void MainWindow::updatePowerState()
     ui->connection_CES->setVisible(powerState);
     ui->connection_audio->setVisible(powerState);
 
-    ui->batteryLevel->setVisible(powerState);
     ui->skin_menu->setVisible(powerState);
     ui->table_menu->setVisible(powerState);
 
@@ -337,6 +340,7 @@ void MainWindow::displayMessage(QString message){
 }
 
 void MainWindow::performConnectionTest() {
+    this->isRunningTest = true;
     int n = 1;
 		QLabel* modeLight;
 		QString modeLightOnStyle;
@@ -373,7 +377,8 @@ void MainWindow::performConnectionTest() {
 				darkenGraphBar(i);
 		}
     intervalTimer->stop();
-		modeLight->setStyleSheet(modeLightOffStyle);
+    modeLight->setStyleSheet(modeLightOffStyle);
+    this->isRunningTest = false;
 }
 
 // start therapy session
@@ -431,7 +436,7 @@ void MainWindow::indicateBatteryLevel() {
 void MainWindow::displayBatteryLevel(int levels, bool flash) {
 	// Update battery graph UI with int from 0-8
 	qDebug() << "Battery graph: " << levels;
-    if (flash && !this->isAdjustingIntensity) {
+    if (flash && !this->isAdjustingIntensity && !this->isRunningTest) {
         flashGraphBar(levels, 3000);
     } else {
         for (int i = 1; i <= levels; i++) {
