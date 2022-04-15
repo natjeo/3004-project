@@ -28,6 +28,16 @@ public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
 
+public slots:
+    void displayHistory();
+
+private:
+    Ui::MainWindow *ui;
+
+    DataBase* db;
+    Therapy* therapy;
+    User* user;
+
     void updateTimer();
     void navigateMenu();
     void electrodesPlaced(bool);
@@ -52,17 +62,11 @@ public:
     void stopSession();
 		void illuminateGraphBar(int);
 		void darkenGraphBar(int);
-        void flashGraphBar(int, int, bool = true);
+        void flashGraphBar(int, int, int = 1);
+		void performConnectionTest();
 
-public slots:
-    void displayHistory();
+		void delay(int);
 
-private:
-    Ui::MainWindow *ui;
-
-    DataBase* db;
-    Therapy* therapy;
-    User* user;
     Battery* battery;
     QTimer *batteryDisplayTimer;
     QElapsedTimer elapsedTimer;

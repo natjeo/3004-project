@@ -231,7 +231,7 @@ void MainWindow::pressUp()
         this->therapy->setIntensity(intensity);
     }
     qDebug() << this->therapy->getIntensity();
-    flashGraphBar(intensity, 500, true);
+    flashGraphBar(intensity, 500, intensity);
     qInfo("up");
     this->isAdjustingIntensity = false;
 }
@@ -245,7 +245,7 @@ void MainWindow::pressDn()
         this->therapy->setIntensity(intensity);
     }
     qDebug() << this->therapy->getIntensity();
-    flashGraphBar(intensity, 500, true);
+    flashGraphBar(intensity, 500, intensity);
     qInfo("down");
     this->isAdjustingIntensity = false;
 }
@@ -336,12 +336,53 @@ void MainWindow::displayMessage(QString message){
         ui->table_menu->setScene(scene);
 }
 
+void MainWindow::performConnectionTest() {
+    int n = 1;
+		QLabel* modeLight;
+		QString modeLightOnStyle;
+		QString modeLightOffStyle;
+		if (this->therapy->getSession() == "Sub-Delta") {
+			modeLight = ui->mode_R;
+			modeLightOnStyle = "image: url(:/icons/Right_on.png);";
+			modeLightOffStyle = "image: url(:/icons/Right.png);";
+		} else {
+			modeLight = ui->mode_L;
+			modeLightOnStyle = "image: url(:/icons/Left_on.png);";
+			modeLightOffStyle = "image: url(:/icons/Left.png);";
+		}
+
+    QTimer* intervalTimer = new QTimer(this);
+    connect(intervalTimer, &QTimer::timeout, this, [=, &n]() {
+				modeLight->setStyleSheet(n % 2 == 0 ? modeLightOffStyle : modeLightOnStyle);
+        n++;
+    });
+    intervalTimer->start(300);
+    flashGraphBar(8, 3000, 7);
+		for (int i = 4; i <= 6; i++) {
+				illuminateGraphBar(i);
+		}
+		delay(2000);
+		for (int i = 4; i <= 6; i++) {
+				darkenGraphBar(i);
+		}
+		for (int i = 1; i <= 3; i++) {
+				illuminateGraphBar(i);
+		}
+		delay(2000);
+		for (int i = 1; i <= 3; i++) {
+				darkenGraphBar(i);
+		}
+    intervalTimer->stop();
+		modeLight->setStyleSheet(modeLightOffStyle);
+}
+
 // start therapy session
 void MainWindow::selectPressed(){
     elapsedTimer.start();
     if (this->therapy->readyToStart()) {
         ui->btn_history->setVisible(false);
         ui->table_menu->scene()->clear();
+				this->performConnectionTest();
         this->sessionTime = this->therapy->getDuration()/20 * 10;
         this->sessionTimer = new QTimer(this);
         connect(this->sessionTimer, &QTimer::timeout, this, &MainWindow::updateSessionTimer);
@@ -391,16 +432,12 @@ void MainWindow::displayBatteryLevel(int levels, bool flash) {
 	// Update battery graph UI with int from 0-8
 	qDebug() << "Battery graph: " << levels;
     if (flash && !this->isAdjustingIntensity) {
-        flashGraphBar(levels, 3000, false);
+        flashGraphBar(levels, 3000);
     } else {
         for (int i = 1; i <= levels; i++) {
             illuminateGraphBar(i);
         }
-        QTime dieTime = QTime::currentTime().addSecs(1);
-        while( QTime::currentTime() < dieTime )
-        {
-        QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
-        }
+				delay(1000);
         for (int i = 1; i <= levels; i++) {
             darkenGraphBar(i);
         }
@@ -472,28 +509,31 @@ void MainWindow::darkenGraphBar(int level) {
 	graphBars->at(level - 1)->setStyleSheet(file);
 }
 
-void MainWindow::flashGraphBar(int level, int msecDuration, bool singleItem) {
+void MainWindow::flashGraphBar(int level, int msecDuration, int startLevel) {
     int n = 1;
-    int startBar = singleItem ? level : 1;
     QTimer* intervalTimer = new QTimer(this);
     connect(intervalTimer, &QTimer::timeout, this, [=, &n]() {
         if (n % 2 == 0) {
-            for (int i = startBar; i <= level; i++)
+            for (int i = startLevel; i <= level; i++)
                 darkenGraphBar(i);
         } else {
-            for (int i = startBar; i <= level; i++)
+            for (int i = startLevel; i <= level; i++)
                 illuminateGraphBar(i);
         }
 
         n++;
     });
     intervalTimer->start(300);
-    QTime dieTime = QTime::currentTime().addMSecs(msecDuration);
+		delay(msecDuration);
+    intervalTimer->stop();
+    for (int i = startLevel; i <= level; i++)
+        darkenGraphBar(i);
+}
+
+void MainWindow::delay(int msec) {
+    QTime dieTime = QTime::currentTime().addMSecs(msec);
     while( QTime::currentTime() < dieTime )
     {
         QCoreApplication::processEvents( QEventLoop::AllEvents, 100 );
     }
-    intervalTimer->stop();
-    for (int i = startBar; i <= level; i++)
-        darkenGraphBar(i);
 }
