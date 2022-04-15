@@ -1,6 +1,6 @@
-<mxfile host="app.diagrams.net" modified="2022-04-15T18:29:35.044Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36" etag="Z40gdAXPzql1eNgEGNZ8" version="17.4.5" type="github">
+<mxfile host="app.diagrams.net" modified="2022-04-15T18:38:37.139Z" agent="5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.75 Safari/537.36" etag="gtag6K1Y6j4yGUkoB2ON" version="17.4.5" type="github">
   <diagram id="0qEBp-4Mjco-mXt_Ezk8" name="Page-1">
-    <mxGraphModel dx="1038" dy="571" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+    <mxGraphModel dx="769" dy="423" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -11,20 +11,26 @@
           <mxGeometry x="170" y="90" width="80" height="411" as="geometry" />
         </mxCell>
         <mxCell id="orFDvQGKnZXyP2b_RlYt-3" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;rounded=1;dashed=1;fontSize=9;strokeColor=#CCCCCC;strokeWidth=0.5;fillColor=#CCCCCC;arcSize=50;" vertex="1" parent="orFDvQGKnZXyP2b_RlYt-2">
-          <mxGeometry x="37.5" y="100" width="5" height="40" as="geometry" />
+          <mxGeometry x="37.5" y="100" width="5" height="90" as="geometry" />
         </mxCell>
         <mxCell id="orFDvQGKnZXyP2b_RlYt-4" value="MainWindow" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;strokeWidth=0.5;fontFamily=Roboto Condensed;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BCondensed;fontSize=10.5;rounded=1;strokeColor=#CCCCCC;fontColor=#666666;" vertex="1" parent="1">
           <mxGeometry x="310" y="90" width="95" height="411" as="geometry" />
         </mxCell>
-        <mxCell id="orFDvQGKnZXyP2b_RlYt-5" value="selectSession(btnId)" style="html=1;verticalAlign=bottom;endArrow=block;rounded=0;strokeWidth=0.5;fontFamily=Roboto Condensed;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BCondensed;fontSize=10.5;exitX=0.874;exitY=0.858;exitDx=0;exitDy=0;exitPerimeter=0;strokeColor=#666666;fontColor=#666666;" edge="1" parent="orFDvQGKnZXyP2b_RlYt-4">
+        <mxCell id="orFDvQGKnZXyP2b_RlYt-5" value="selectSession(btnId)" style="html=1;verticalAlign=bottom;endArrow=block;rounded=0;strokeWidth=0.5;fontFamily=Roboto Condensed;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BCondensed;fontSize=10.5;exitX=0.874;exitY=0.858;exitDx=0;exitDy=0;exitPerimeter=0;strokeColor=#666666;fontColor=#666666;startArrow=none;entryX=0;entryY=0.226;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="orFDvQGKnZXyP2b_RlYt-4" source="orFDvQGKnZXyP2b_RlYt-21" target="orFDvQGKnZXyP2b_RlYt-6">
           <mxGeometry x="-0.0714" y="17" width="80" relative="1" as="geometry">
             <mxPoint x="-97.49999999999994" y="136.6200000000001" as="sourcePoint" />
             <mxPoint x="47.87999999999994" y="136.6200000000001" as="targetPoint" />
             <mxPoint as="offset" />
+            <Array as="points">
+              <mxPoint x="40" y="140" />
+            </Array>
           </mxGeometry>
         </mxCell>
         <mxCell id="orFDvQGKnZXyP2b_RlYt-6" value="" style="html=1;points=[];perimeter=orthogonalPerimeter;rounded=1;dashed=1;fontSize=9;strokeColor=#CCCCCC;strokeWidth=0.5;fillColor=#CCCCCC;" vertex="1" parent="orFDvQGKnZXyP2b_RlYt-4">
-          <mxGeometry x="45" y="130" width="5" height="30" as="geometry" />
+          <mxGeometry x="50" y="130" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="orFDvQGKnZXyP2b_RlYt-21" value="on" style="ellipse;whiteSpace=wrap;html=1;fontSize=7;fontFamily=Roboto Condensed;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BCondensed;strokeWidth=0.5;fontColor=#666666;strokeColor=#666666;" vertex="1" parent="orFDvQGKnZXyP2b_RlYt-4">
+          <mxGeometry x="-97.5" y="130" width="20" height="10" as="geometry" />
         </mxCell>
         <mxCell id="orFDvQGKnZXyP2b_RlYt-11" value="Therapy" style="shape=umlLifeline;perimeter=lifelinePerimeter;whiteSpace=wrap;html=1;container=1;collapsible=0;recursiveResize=0;outlineConnect=0;strokeWidth=0.5;fontFamily=Roboto Condensed;fontSource=https%3A%2F%2Ffonts.googleapis.com%2Fcss%3Ffamily%3DRoboto%2BCondensed;fontSize=10.5;rounded=1;strokeColor=#CCCCCC;fontColor=#666666;" vertex="1" parent="1">
           <mxGeometry x="457.5" y="90" width="95" height="411" as="geometry" />
