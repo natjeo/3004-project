@@ -53,6 +53,7 @@ private:
     void displayMessage(QString);
     void selectPressed(); // this is a temporary name we need a better one
     void selectReleased(); // this is a temporary name we need a better one
+    void delayPower();
     void cleanMessage();
     void indicateBatteryLevel();
     void displayBatteryLevel(int, bool = false);
@@ -70,6 +71,7 @@ private:
     int performConnectionTest();
     void delay(int);
     void autoPower();
+    void powerBtnReleased();
 
     Battery* battery;
     QTimer *batteryDisplayTimer;
@@ -82,6 +84,13 @@ private:
     bool isRunningTest;
     QTimer *sessionTimer;
     int sessionTime;
+    bool sessionInProgress;
+    int autoShutOffTime = 12000;
+QTimer* intervalTimer;
+QLabel* modeLight;
+QString modeLightOnStyle;
+QString modeLightOffStyle;
+bool readyToStartSession;
 
     bool eventFilter(QObject *obj, QEvent *event) override;
     QTimer* userInactive;
