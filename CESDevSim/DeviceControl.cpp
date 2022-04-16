@@ -36,14 +36,12 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     connect(ui->btn_history, &QPushButton::pressed, this, &MainWindow::displayHistory);
     connect(ui->btn_del, &QPushButton::pressed, this, &MainWindow::stopSession);
 
-    //QString name = user->getName();
-    //printf(name.toLatin1());
-
     // setup device power status
     powerState = false;
     isAdjustingIntensity = false;
     updatePowerState();
-    connect(ui->btn_power, &QPushButton::released, this, &MainWindow::powerBtnPressed);
+    connect(ui->btn_power, &QPushButton::pressed, this, &MainWindow::powerBtnPressed);
+    connect(ui->btn_power, &QPushButton::released, this, &MainWindow::powerBtnReleased);
 
     graphBars = new QVector<QLabel*> { ui->bar_1, ui->bar_2, ui->bar_3, ui->bar_4, ui->bar_5, ui->bar_6, ui->bar_7, ui->bar_8 };
 
@@ -52,59 +50,66 @@ MainWindow::MainWindow(QWidget *parent): QMainWindow(parent), ui(new Ui::MainWin
     foreach (button, allButtons){
         button->installEventFilter(this);
     }
+
+    sessionInProgress=false;
+    isRunningTest=false;
+    this->intervalTimer = new QTimer(this);
 }
 
 void MainWindow::powerBtnPressed()
 {
-    qDebug() << "Pressed: " << powerState;
-    powerState  = !powerState;
-    updatePowerState();
+    elapsedTimer.start();
+    if (!sessionInProgress && !isRunningTest) {
+        qDebug() << "Pressed: " << powerState;
+        powerState  = !powerState;
+        updatePowerState();
 
-    // group duration button selections
-    selDur = new QButtonGroup();
-    selDur->addButton(ui->dur_20min);
-    selDur->setId(ui->dur_20min, 1);
-    selDur->addButton(ui->dur_45min);
-    selDur->setId(ui->dur_45min, 2);
-    selDur->addButton(ui->dur_3hrs);
-    selDur->setId(ui->dur_3hrs, 3);
-    selDur->addButton(ui->dur_custom);
-    selDur->setId(ui->dur_custom, 4);
-    selDur->setExclusive(true);
-    connect(selDur, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), [=](QAbstractButton* button){
-          button->setChecked(true);
-          selectDuration(selDur->checkedId());
-    });
+        // group duration button selections
+        selDur = new QButtonGroup();
+        selDur->addButton(ui->dur_20min);
+        selDur->setId(ui->dur_20min, 1);
+        selDur->addButton(ui->dur_45min);
+        selDur->setId(ui->dur_45min, 2);
+        selDur->addButton(ui->dur_3hrs);
+        selDur->setId(ui->dur_3hrs, 3);
+        selDur->addButton(ui->dur_custom);
+        selDur->setId(ui->dur_custom, 4);
+        selDur->setExclusive(true);
+        connect(selDur, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), [=](QAbstractButton* button){
+              button->setChecked(true);
+              selectDuration(selDur->checkedId());
+        });
 
-    // group session button selections
-    selSes = new QButtonGroup();
-    selSes->addButton(ui->ses_met);
-    selSes->setId(ui->ses_met, 1);
-    selSes->addButton(ui->ses_subDelta);
-    selSes->setId(ui->ses_subDelta, 2);
-    selSes->addButton(ui->ses_delta);
-    selSes->setId(ui->ses_delta, 3);
-    selSes->addButton(ui->ses_theta);
-    selSes->setId(ui->ses_theta, 4);
-    selSes->addButton(ui->ses_alpha);
-    selSes->setId(ui->ses_alpha, 5);
-    selSes->addButton(ui->ses_beta1);
-    selSes->setId(ui->ses_beta1, 6);
-    selSes->addButton(ui->ses_beta2);
-    selSes->setId(ui->ses_beta2, 7);
-    selSes->addButton(ui->ses_100Hz);
-    selSes->setId(ui->ses_100Hz, 8);
-    connect(selSes, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), [=](QAbstractButton* button){
-          button->setChecked(true);
-          selectSession(selSes->checkedId());
-    });
+        // group session button selections
+        selSes = new QButtonGroup();
+        selSes->addButton(ui->ses_met);
+        selSes->setId(ui->ses_met, 1);
+        selSes->addButton(ui->ses_subDelta);
+        selSes->setId(ui->ses_subDelta, 2);
+        selSes->addButton(ui->ses_delta);
+        selSes->setId(ui->ses_delta, 3);
+        selSes->addButton(ui->ses_theta);
+        selSes->setId(ui->ses_theta, 4);
+        selSes->addButton(ui->ses_alpha);
+        selSes->setId(ui->ses_alpha, 5);
+        selSes->addButton(ui->ses_beta1);
+        selSes->setId(ui->ses_beta1, 6);
+        selSes->addButton(ui->ses_beta2);
+        selSes->setId(ui->ses_beta2, 7);
+        selSes->addButton(ui->ses_100Hz);
+        selSes->setId(ui->ses_100Hz, 8);
+        connect(selSes, QOverload<QAbstractButton *>::of(&QButtonGroup::buttonClicked), [=](QAbstractButton* button){
+              button->setChecked(true);
+              selectSession(selSes->checkedId());
+        });
 
-    if (powerState) {
-        this->battery->setLevel(this->user->getBatteryLvl());
-        this->indicateBatteryLevel();
-    } else {
-        qDebug() << "no power state";
-        this->user->setBatteryLvl(this->battery->getLevel());
+        if (powerState) {
+            this->battery->setLevel(this->user->getBatteryLvl());
+            this->indicateBatteryLevel();
+        } else {
+            qDebug() << "no power state";
+            this->user->setBatteryLvl(this->battery->getLevel());
+        }
     }
 }
 
@@ -303,17 +308,20 @@ void MainWindow::updatePowerState()
     ui->btn_history->setVisible(powerState);
 
     if (powerState){
+        // device will turn on
         ui->powerLED->setStyleSheet("image: url(:/icons/power_on.png);");
         this->therapy = new Therapy("MET", 20, db->getPreference("MET"));
         displayHomeScreen();
         connect(this->userInactive, &QTimer::timeout, this, &MainWindow::autoPower);
-        this->userInactive->start(5000);
+        this->userInactive->start(autoShutOffTime);
     } else {
+        // device will turn off
         ui->powerLED->setStyleSheet("image: url(:/icons/power_off.png);");
         if (this->sessionTime > 0) {
             this->sessionTimer->stop();
             this->sessionTime = 0;
         }
+
     }
 }
 
@@ -347,9 +355,6 @@ void MainWindow::displayMessage(QString message){
 int MainWindow::performConnectionTest() {
     this->isRunningTest = true;
     int n = 1;
-		QLabel* modeLight;
-		QString modeLightOnStyle;
-		QString modeLightOffStyle;
 		if (this->therapy->getSession() == "Sub-Delta") {
 			modeLight = ui->mode_R;
 			modeLightOnStyle = "image: url(:/icons/Right_on.png);";
@@ -360,9 +365,9 @@ int MainWindow::performConnectionTest() {
 			modeLightOffStyle = "image: url(:/icons/Left.png);";
 		}
 
-    QTimer* intervalTimer = new QTimer(this);
+    intervalTimer = new QTimer(this);
     connect(intervalTimer, &QTimer::timeout, this, [=, &n]() {
-				modeLight->setStyleSheet(n % 2 == 0 ? modeLightOffStyle : modeLightOnStyle);
+        modeLight->setStyleSheet(n % 2 == 0 ? modeLightOffStyle : modeLightOnStyle);
         n++;
     });
     intervalTimer->start(300);
@@ -405,16 +410,19 @@ int MainWindow::performConnectionTest() {
 void MainWindow::selectPressed(){
     elapsedTimer.start();
     if (this->therapy->readyToStart()) {
-        ui->btn_history->setVisible(false);
+            ui->btn_history->setVisible(false);
         ui->table_menu->scene()->clear();
-
-				int skinConnectionLevel = this->performConnectionTest();
-        this->batteryDisplayTimer->start(BATTERY_DISPLAY_INTERVAL);
-        this->battery->startDrain(this->therapy->getIntensity(), skinConnectionLevel);
-        this->sessionTime = this->therapy->getDuration()/20 * 10;
-        this->sessionTimer = new QTimer(this);
-        connect(this->sessionTimer, &QTimer::timeout, this, &MainWindow::updateSessionTimer);
-        this->sessionTimer->start(1000);
+        this->readyToStartSession = true;
+        int skinConnectionLevel = this->performConnectionTest();
+        if (this->readyToStartSession) {
+            this->batteryDisplayTimer->start(BATTERY_DISPLAY_INTERVAL);
+            this->battery->startDrain(this->therapy->getIntensity(), skinConnectionLevel);
+            sessionInProgress=true;
+            this->sessionTime = this->therapy->getDuration()/20 * 10;
+            this->sessionTimer = new QTimer(this);
+            connect(this->sessionTimer, &QTimer::timeout, this, &MainWindow::updateSessionTimer);
+            this->sessionTimer->start(1000);
+        }
     } else {
         displayMessage("Plase select intensity before starting therapy");
     }
@@ -423,6 +431,7 @@ void MainWindow::selectPressed(){
 void MainWindow::cleanMessage(){
     ui->table_menu->scene()->clear();
     ui->recordsList->clear();
+    qInfo("hereeeee");
     displayHomeScreen();
 }
 
@@ -432,6 +441,7 @@ void MainWindow::selectReleased(){
         updatePreferences();
     }
 }
+
 
 void MainWindow::indicateBatteryLevel() {
 	int batteryStatus = this->battery->curStatus();
@@ -508,9 +518,11 @@ void MainWindow::updateSessionTimer(){
 
 // end therapy session
 void MainWindow::stopSession(){
-    if (this->sessionTime > 0) {
+    if (this->sessionTime >= 0 && sessionInProgress) {
         this->sessionTimer->stop();
         this->sessionTime = 0;
+        sessionInProgress=false;
+        displayHomeScreen();
     }
 		this->batteryDisplayTimer->stop();
 		this->battery->getTimer()->stop();
@@ -519,7 +531,7 @@ void MainWindow::stopSession(){
 
 bool MainWindow::eventFilter(QObject *obj, QEvent *event){
     if (event->type()==QEvent::MouseButtonPress){
-         this->userInactive->start(5000);
+         this->userInactive->start(autoShutOffTime);
         return false;
     }
 }
@@ -533,7 +545,7 @@ void MainWindow::illuminateGraphBar(int level) {
 		colour = QString("yellow");
 	} else {
 		colour = QString("red");
-	}
+    }
 
 	QString file = QString("image: url(:/icons/%1_%2.png);").arg(QString::number(level), colour);
 	graphBars->at(level - 1)->setStyleSheet(file);
@@ -575,11 +587,32 @@ void MainWindow::delay(int msec) {
 }
 
 void MainWindow::autoPower(){
-    if (this->sessionTime <= 0) {
+    if (!sessionInProgress && !isRunningTest) {
         this->userInactive->stop();
         this->powerState = false;
         updatePowerState();
     } else {
-        this->userInactive->start(5000);
+        this->userInactive->start(autoShutOffTime);
+    }
+}
+
+void MainWindow::powerBtnReleased(){
+    if (sessionInProgress || isRunningTest) {
+        int timeMilliSecs = elapsedTimer.elapsed();
+        if (timeMilliSecs >= 2000) {
+           // delay(2000);
+            sessionInProgress = false;
+            if (isRunningTest) {
+                this->intervalTimer->stop();
+                this->modeLight->setStyleSheet("image: url(:/icons/Right.png);");
+                this->isRunningTest = false;
+                this->sessionInProgress = false;
+                this->readyToStartSession = false;
+            }
+            isRunningTest = false;
+            sessionInProgress = false;
+            powerState = false;
+            updatePowerState();
+        }
     }
 }
