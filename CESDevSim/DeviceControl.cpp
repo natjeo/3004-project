@@ -102,12 +102,8 @@ void MainWindow::powerBtnPressed()
     if (powerState) {
         this->battery->setLevel(this->user->getBatteryLvl());
         this->indicateBatteryLevel();
-        this->batteryDisplayTimer->start(BATTERY_DISPLAY_INTERVAL);
-        this->battery->startDrain();
     } else {
         qDebug() << "no power state";
-        this->batteryDisplayTimer->stop();
-        this->battery->getTimer()->stop();
         this->user->setBatteryLvl(this->battery->getLevel());
     }
 }
@@ -348,7 +344,7 @@ void MainWindow::displayMessage(QString message){
         ui->table_menu->setScene(scene);
 }
 
-void MainWindow::performConnectionTest() {
+int MainWindow::performConnectionTest() {
     this->isRunningTest = true;
     int n = 1;
 		QLabel* modeLight;
@@ -370,7 +366,12 @@ void MainWindow::performConnectionTest() {
         n++;
     });
     intervalTimer->start(300);
+		// No connection
     flashGraphBar(8, 3000, 7);
+
+		bool isOkayConnection = QRandomGenerator::global()->bounded(1);
+
+		// Okay connection
 		for (int i = 4; i <= 6; i++) {
 				illuminateGraphBar(i);
 		}
@@ -378,6 +379,15 @@ void MainWindow::performConnectionTest() {
 		for (int i = 4; i <= 6; i++) {
 				darkenGraphBar(i);
 		}
+
+		if (isOkayConnection) {
+			intervalTimer->stop();
+			modeLight->setStyleSheet(modeLightOffStyle);
+			this->isRunningTest = false;
+			return OKAY_CONNECTION;
+		}
+
+		// Excellent connection
 		for (int i = 1; i <= 3; i++) {
 				illuminateGraphBar(i);
 		}
@@ -388,6 +398,7 @@ void MainWindow::performConnectionTest() {
     intervalTimer->stop();
     modeLight->setStyleSheet(modeLightOffStyle);
     this->isRunningTest = false;
+		return EXCELLENT_CONNECTION;
 }
 
 // start therapy session
@@ -396,7 +407,10 @@ void MainWindow::selectPressed(){
     if (this->therapy->readyToStart()) {
         ui->btn_history->setVisible(false);
         ui->table_menu->scene()->clear();
-				this->performConnectionTest();
+
+				int skinConnectionLevel = this->performConnectionTest();
+        this->batteryDisplayTimer->start(BATTERY_DISPLAY_INTERVAL);
+        this->battery->startDrain(this->therapy->getIntensity(), skinConnectionLevel);
         this->sessionTime = this->therapy->getDuration()/20 * 10;
         this->sessionTimer = new QTimer(this);
         connect(this->sessionTimer, &QTimer::timeout, this, &MainWindow::updateSessionTimer);
@@ -498,6 +512,8 @@ void MainWindow::stopSession(){
         this->sessionTimer->stop();
         this->sessionTime = 0;
     }
+		this->batteryDisplayTimer->stop();
+		this->battery->getTimer()->stop();
     displayHomeScreen();
 }
 

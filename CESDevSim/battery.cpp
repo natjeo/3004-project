@@ -10,9 +10,11 @@ void Battery::updateBattery() {
 	this->drainBattery(1);
 }
 
-void Battery::startDrain() {
-    int timeout = (BATTERY_LENGTH_MINS * 60 * 1000) / INIT_LEVEL;
-    timer->start(timeout);
+void Battery::startDrain(int intensity, int skinConnectionLevel) {
+    int timeoutWithSmallestDrain = (BATTERY_LENGTH_MINS * 60 * 1000) / INIT_LEVEL;
+    int adjustedTimeout = timeoutWithSmallestDrain / qSqrt(intensity) / skinConnectionLevel;
+		qDebug() << "timeout: " << adjustedTimeout;
+    timer->start(adjustedTimeout);
 }
 
 void Battery::drainBattery(int reduction){

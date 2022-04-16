@@ -10,11 +10,15 @@
 #include <QButtonGroup>
 #include <QThread>
 #include <QTime>
+#include <QRandomGenerator>
 
 #include "DataBase.h"
 #include "Battery.h"
 
 #define BATTERY_DISPLAY_INTERVAL 10000
+
+#define EXCELLENT_CONNECTION 1
+#define OKAY_CONNECTION 2
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -63,7 +67,7 @@ private:
     void illuminateGraphBar(int);
     void darkenGraphBar(int);
     void flashGraphBar(int, int, int = 1);
-    void performConnectionTest();
+    int performConnectionTest();
     void delay(int);
     void autoPower();
 

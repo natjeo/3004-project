@@ -25,7 +25,7 @@ class Battery: public QObject {
 		void setLevel(int);
 		int getLevelForDisplayGraph();
 		void drainBattery(int);
-        void startDrain();
+        void startDrain(int, int);
 		QTimer* getTimer();
 
 	private:
