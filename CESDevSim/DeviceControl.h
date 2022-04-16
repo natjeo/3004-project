@@ -65,6 +65,7 @@ private:
     void flashGraphBar(int, int, int = 1);
     void performConnectionTest();
     void delay(int);
+    void autoPower();
 
     Battery* battery;
     QTimer *batteryDisplayTimer;
@@ -77,5 +78,8 @@ private:
     bool isRunningTest;
     QTimer *sessionTimer;
     int sessionTime;
+
+    bool eventFilter(QObject *obj, QEvent *event) override;
+    QTimer* userInactive;
 };
 #endif // MAINWINDOW_H
