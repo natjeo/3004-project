@@ -767,6 +767,9 @@ QPushButton:pressed {
     </widget>
    </widget>
    <widget class="QPushButton" name="dur_custom">
+    <property name="enabled">
+     <bool>false</bool>
+    </property>
     <property name="geometry">
      <rect>
       <x>610</x>
