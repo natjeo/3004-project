@@ -24,12 +24,23 @@ The project directory is broken down as follows
 - **README** current file outlining submission overview
 - **Design Documentation** containing jpg files of use cases/ diagram, sequence diagrams, UML and traceability matrix
 - **CESDevSim** source files (.h and .c) and supporting materials required to run a working version of our Qt c++ application
+- **Team9_report.pdf** file containing all submission requirements 
 
 ## Running Instructions:
 
-**TBD:**
-TBD
+1. Build program in Qt c++
+2. Power on the device using the power button
+3. Select intensity to begin a session using the up/ down button (duration and session type has been selected by default)
+4. Select ok to begin session (hold for 2 seconds to save).
+5. Upon completion, device will turn off.
 
 ## Tested Scenarios:
 
-TBD
+Functionality involving ear clips were not included as a part of our program.
+
+- Connection Test passes by default
+- Ear clips are assumed to be connected at all times
+
+User Designed Sessions were not implemented due to *DAVID Session Editor* being required (sold separately).
+
+All other requirements have been included.
