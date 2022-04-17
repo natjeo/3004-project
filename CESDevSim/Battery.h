@@ -13,7 +13,7 @@
 #define LOW_LEVEL 25
 #define CRITICALLY_LOW_LEVEL 12
 
-#define BATTERY_LENGTH_MINS 1
+#define BATTERY_LENGTH_MINS 20
 #define INIT_LEVEL 100
 
 class Battery: public QObject {

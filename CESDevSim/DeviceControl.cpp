@@ -210,8 +210,7 @@ void MainWindow::recordTherapy(){
     qDebug() << this->therapy->getSession();
     if (this->therapy->readyToStart()) {
         if (db->addTherapyRecord(this->therapy)) {
-            qInfo("therapy recorded succ");
-            displayMessage("therapy saved *SOMEBODY SPELL SUCCESSFULLY CORRECTLY FOR ME*"); //update this!!!!!!!!!!!!!!
+            displayMessage("therapy saved successfully");
         }
     } else {
         displayMessage("Plase select intensity before starting therapy");
@@ -409,36 +408,38 @@ int MainWindow::performConnectionTest() {
 // start therapy session
 void MainWindow::selectPressed(){
     elapsedTimer.start();
-    if (this->therapy->readyToStart()) {
-            ui->btn_history->setVisible(false);
-        ui->table_menu->scene()->clear();
-        this->readyToStartSession = true;
-        int skinConnectionLevel = this->performConnectionTest();
-        if (this->readyToStartSession) {
-            this->batteryDisplayTimer->start(BATTERY_DISPLAY_INTERVAL);
-            this->battery->startDrain(this->therapy->getIntensity(), skinConnectionLevel);
-            sessionInProgress=true;
-            this->sessionTime = this->therapy->getDuration()/20 * 10;
-            this->sessionTimer = new QTimer(this);
-            connect(this->sessionTimer, &QTimer::timeout, this, &MainWindow::updateSessionTimer);
-            this->sessionTimer->start(1000);
-        }
-    } else {
-        displayMessage("Plase select intensity before starting therapy");
-    }
 }
 
 void MainWindow::cleanMessage(){
     ui->table_menu->scene()->clear();
     ui->recordsList->clear();
-    qInfo("hereeeee");
-    displayHomeScreen();
+    if (!isRunningTest && !sessionInProgress) {
+        displayHomeScreen();
+    }
 }
 
 void MainWindow::selectReleased(){
     int timeMilliSecs = elapsedTimer.elapsed();
     if (timeMilliSecs >= 1000) {
         updatePreferences();
+    } else {
+        if (this->therapy->readyToStart()) {
+            ui->btn_history->setVisible(false);
+            ui->table_menu->scene()->clear();
+            this->readyToStartSession = true;
+            int skinConnectionLevel = this->performConnectionTest();
+            if (this->readyToStartSession) {
+                this->batteryDisplayTimer->start(BATTERY_DISPLAY_INTERVAL);
+                this->battery->startDrain(this->therapy->getIntensity(), skinConnectionLevel);
+                sessionInProgress=true;
+                this->sessionTime = this->therapy->getDuration() * 60;
+                this->sessionTimer = new QTimer(this);
+                connect(this->sessionTimer, &QTimer::timeout, this, &MainWindow::updateSessionTimer);
+                this->sessionTimer->start(1000);
+            }
+        } else {
+            displayMessage("Plase select intensity before starting therapy");
+        }
     }
 }
 
@@ -501,7 +502,7 @@ void MainWindow::updateSessionTimer(){
         QGraphicsTextItem *text = ui->table_menu->scene()->addText("Time before the end of the session:");
         text->setPos(20, 20);
         int hrs = this->sessionTime / 3600;
-        int mins = this->sessionTime / 60;
+        int mins = (this->sessionTime % 3600) /60;
         int secs = this->sessionTime % 60;
         this->sessionTime -= 1;
         QString hrsStr = (hrs == 0) ? "00": QString::number(hrs);
