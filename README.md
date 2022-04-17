@@ -24,7 +24,7 @@ The project directory is broken down as follows
 - **README** current file outlining submission overview
 - **Design Documentation** containing jpg files of use cases/ diagram, sequence diagrams, UML and traceability matrix
 - **CESDevSim** source files (.h and .c) and supporting materials required to run a working version of our Qt c++ application
-- **Team9_report.pdf** file containing all submission requirements 
+- **Team9_finalreport.pdf** file containing all submission requirements 
 
 ## Running Instructions:
 
